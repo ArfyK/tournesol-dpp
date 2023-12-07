@@ -38,10 +38,10 @@ n_sample = 10
 
 bundle_size = 9
 
-results = Array{Int64, 2}(undef, n_sample, bundle_size)
+results = Array{String, 2}(undef, n_sample, bundle_size)
 
 for i in 1:n_sample
-	results[i,:] = sample(L, bundle_size) .- 1
+	results[i,:] = df[sample(L, bundle_size), "uid"]
 end
 
 CSV.write("dpp_sampling.csv",DataFrame(results, :auto))
