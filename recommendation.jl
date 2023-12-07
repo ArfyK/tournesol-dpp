@@ -34,13 +34,14 @@ K = LowRank(X)
 L = EllEnsemble(K)
 
 #Sample
-n_sample = 10
+n_sample = 1000
 
 bundle_size = 9
 
 results = Array{String, 2}(undef, n_sample, bundle_size)
 
 for i in 1:n_sample
+	@show "sample "*string(i)
 	results[i,:] = df[sample(L, bundle_size), "uid"]
 end
 
