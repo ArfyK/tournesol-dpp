@@ -105,7 +105,7 @@ f.suptitle("From " + str(n_sample) + " samples of " + str(bundle_size) + " video
 plt.subplots_adjust(
     left=0.052, bottom=0.09, right=0.998, top=0.907, wspace=0.055, hspace=0.34
 )
-plt.show()
+
 plt.savefig(
     fname="dpp_sampling"
     + "_n_sample="
