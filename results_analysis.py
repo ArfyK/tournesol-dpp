@@ -48,15 +48,69 @@ selection_frequencies.to_csv(
     + ".csv"
 )
 
-f, axs = plt.subplots(1, 3)
+f, axs = plt.subplots(1, 3, figsize=(13, 7))
 
 sns.barplot(data=selection_frequencies, x="rank", y="frequency", ax=axs[0])
 
-ax[0].set_xticks([], minor=True)
-ax[0].set_xticks(list(range(0, 2000, 500)))
-ax[0].set_title("Selection frequencies of DPP")
+axs[0].set_xticks([], minor=True)
+axs[0].set_xticks(list(range(0, 2000, 500)))
+axs[0].set_title("Selection frequencies of DPP")
+
+# Top 5%
+quantile_95 = df["tournesol_score"].quantile(0.95)
+
+
+def count_videos_within_threshold(uids_list, dataFrame, quantile, above=True):
+    if above:
+        # returns how many videos from the uids_list have a tournesol_score above the quantile
+        return (
+            (dataFrame["uid"].isin(uids_list))
+            & (dataFrame["tournesol_score"] >= quantile)
+        ).sum()
+    else:
+        # returns how many videos from the uids_list have a tournesol_score below the quantile
+        return (
+            (
+                dataFrame["uid"].isin(uids_list) & dataFrame["tournesol_score"]
+                <= quantile
+            )
+        ).sum()
+
+
+results["top_5%"] = results.apply(
+    lambda x: count_videos_within_threshold(x, df, quantile_95, above=True), axis=1
+)
+
+sns.boxplot(data=results, x="top_5%", ax=axs[1])
+
+axs[1].set_title(
+    "Videos from the top 5%" + " | Total: " + str(int(results["top_5%"].sum()))
+)
+
+# Bottom 50%
+quantile_50 = df["tournesol_score"].quantile(0.5)
+
+results["bottom_50%"] = results.apply(
+    lambda x: count_videos_within_threshold(x, df, quantile_95, above=True), axis=1
+)
+
+sns.boxplot(data=results, x="bottom_50%", ax=axs[2])
+
+axs[2].set_title(
+    "Videos from the bottom 50%" + " | Total: " + str(int(results["bottom_50%"].sum()))
+)
+
+f.suptitle("From " + str(n_sample) + " samples of " + str(bundle_size) + " videos.")
 
 plt.subplots_adjust(
-    left=0.04, bottom=0.043, right=0.998, top=0.907, wspace=0.055, hspace=0.34
+    left=0.052, bottom=0.09, right=0.998, top=0.907, wspace=0.055, hspace=0.34
 )
 plt.show()
+plt.savefig(
+    fname="dpp_sampling"
+    + "_n_sample="
+    + str(n_sample)
+    + "_bundle_size="
+    + str(bundle_size)
+    + ".png"
+)
