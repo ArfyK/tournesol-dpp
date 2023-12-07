@@ -44,5 +44,5 @@ for i in 1:n_sample
 	results[i,:] = df[sample(L, bundle_size), "uid"]
 end
 
-CSV.write("dpp_sampling.csv",DataFrame(results, :auto))
+CSV.write("dpp_sampling_bundle_size="*string(bundle_size)*"n_sample="*string(n_sample)*".csv",DataFrame(results, :auto))
 
