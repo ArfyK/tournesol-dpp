@@ -5,14 +5,69 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+CRITERIA = [
+    "largely_recommended",
+    "reliability",
+    "importance",
+    "engaging",
+    "pedagogy",
+    "layman_friendly",
+    "entertaining_relaxing",
+    "better_habits",
+    "diversity_inclusion",
+    "backfire_risk",
+]
+
 #### DATA SET UP ####
 df = pd.read_csv(sys.argv[1])
 
 results = pd.read_csv(sys.argv[2])
 n_sample, bundle_size = results.shape
 
-### Plots
+#### Plots ####
 
+# Criteria
+
+criteria_maximums = df[CRITERIA].max()
+criteria_minimums = df[CRITERIA].min()
+
+
+def normalized_criteria_maximums_from_bundle(bundle, data):
+    return (data.loc[data["uid"].isin(bundle), CRITERIA].max() - criteria_minimums) / (
+        criteria_maximums - criteria_minimums
+    )
+
+
+results[CRITERIA] = results.apply(
+    lambda x: normalized_criteria_maximums_from_bundle(x, df), axis=1
+)
+
+f, axs = plt.subplots(2, 5, figsize=(13, 7), sharey=True)
+for i in range(len(CRITERIA)):
+    sns.boxplot(data=results, x=CRITERIA[i], ax=axs[i % 2, i % 5], orient="h")
+    sns.stripplot(
+        data=results,
+        x=CRITERIA[i],
+        ax=axs[i % 2, i % 5],
+    )
+
+    axs[i % 2, i % 5].xaxis.grid(True)
+    axs[i % 2, i % 5].set_ylabel("")
+
+f.suptitle("Normalized criteria maximums")
+plt.subplots_adjust(
+    left=0.014, bottom=0.074, right=0.971, top=0.888, wspace=0.150, hspace=0.34
+)
+
+plt.savefig(
+    fname="dpp_sampling"
+    + "_criteria_maximums"
+    + "_n_sample="
+    + str(n_sample)
+    + "_bundle_size="
+    + str(bundle_size)
+    + ".png"
+)
 # Selection frequencies
 selection_frequencies = pd.DataFrame(columns=["rank", "uid", "frequency"])
 
@@ -108,6 +163,7 @@ plt.subplots_adjust(
 
 plt.savefig(
     fname="dpp_sampling"
+    + "_bundle_quality"
     + "_n_sample="
     + str(n_sample)
     + "_bundle_size="
