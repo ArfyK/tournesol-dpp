@@ -24,13 +24,14 @@ function get_age_in_days(date::AbstractString, ref_date::Date)::Int
 	end
 
 function compute_qualities(
+			   tournesol_scores_power::Number,
 			   criteria_coefficient::Number, 
 			   recency_coefficient::Number, 
 			   tournesol_scores::Array{Float64, 1}, 
 			   criteria_scores::Array{Float64, 2}, 
 			   ages_in_day::Array{Int64, 1}
 			   )::Array{Float64, 1}
-	return tournesol_scores + criteria_coefficient*vec(sum(max.(criteria_scores, 0), dims=2)) + recency_coefficient./ages_in_day
+	return tournesol_scores.^tournesol_scores_power + criteria_coefficient*vec(sum(max.(criteria_scores, 0), dims=2)) + recency_coefficient./ages_in_day
 	end
 
 ref_date = Date("2023-12-13", dateformat"yyyy-mm-dd")
@@ -45,10 +46,12 @@ criteria_scores = Matrix(coalesce.(df[:, CRITERIA], 0))
 ages_in_days = get_age_in_days.(df[:, :publication_date], ref_date)
 
 coefficients = DataFrame(CSV.File("quality_function_coefficient.csv"))
+tournesol_scores_powers = coefficients[:,:tournesol_scores_power]
 criteria_coefficients = coefficients[:,:criteria_coefficient]
 recency_coefficients = coefficients[:,:recency_coefficient]
 
 qualities = compute_qualities(
+			      tournesol_scores_powers[1],
 			      criteria_coefficients[1],
 			      recency_coefficients[1],
 			      tournesol_scores,

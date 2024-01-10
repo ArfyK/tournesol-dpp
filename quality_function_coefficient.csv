@@ -1,2 +1,2 @@
-criteria_coefficient,recency_coefficient
-0.1,20
+tournesol_scores_power,criteria_coefficient,recency_coefficient
+4,0.1,20
