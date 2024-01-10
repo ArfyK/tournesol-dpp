@@ -1,4 +1,5 @@
 import sys
+import datetime
 
 import pandas as pd
 import numpy as np
@@ -103,13 +104,13 @@ selection_frequencies.to_csv(
     + ".csv"
 )
 
-f, axs = plt.subplots(1, 3, figsize=(13, 7))
+f, axs = plt.subplots(2, 2, figsize=(13, 7))
 
-sns.barplot(data=selection_frequencies, x="rank", y="frequency", ax=axs[0])
+sns.barplot(data=selection_frequencies, x="rank", y="frequency", ax=axs[0][0])
 
-axs[0].set_xticks([], minor=True)
-axs[0].set_xticks(list(range(0, 2000, 500)))
-axs[0].set_title("Selection frequencies of DPP")
+axs[0][0].set_xticks([], minor=True)
+axs[0][0].set_xticks(list(range(0, 2000, 500)))
+axs[0][0].set_title("Selection frequencies of DPP")
 
 # Top 5%
 quantile_95 = df["tournesol_score"].quantile(0.95)
@@ -136,9 +137,10 @@ results["top_5%"] = results.apply(
     lambda x: count_videos_within_threshold(x, df, quantile_95, above=True), axis=1
 )
 
-sns.boxplot(data=results, x="top_5%", ax=axs[1])
+sns.boxplot(data=results, x="top_5%", ax=axs[0][1])
+sns.stripplot(data=results, x="top_5%", ax=axs[0][1])
 
-axs[1].set_title(
+axs[0][1].set_title(
     "Videos from the top 5%" + " | Total: " + str(int(results["top_5%"].sum()))
 )
 
@@ -149,11 +151,50 @@ results["bottom_50%"] = results.apply(
     lambda x: count_videos_within_threshold(x, df, quantile_50, above=False), axis=1
 )
 
-sns.boxplot(data=results, x="bottom_50%", ax=axs[2])
+sns.boxplot(data=results, x="bottom_50%", ax=axs[1][0])
+sns.stripplot(data=results, x="bottom_50%", ax=axs[1][0])
 
-axs[2].set_title(
+axs[1][0].set_title(
     "Videos from the bottom 50%" + " | Total: " + str(int(results["bottom_50%"].sum()))
 )
+
+#Top 20 from last month
+def get_age_in_days(video_series, ref_date):
+    # return 1 if the video is less than a day old
+    return max(
+        (
+            ref_date
+            - datetime.datetime.strptime(
+                video_series["publication_date"].split("T")[0], "%Y-%m-%d"
+            )
+        ).days,
+        1,
+    )  # remove the time part of the datetime with the split because some entries only have the date part.
+
+ref_date = datetime.datetime(2023, 9, 19, 0, 0)  # one day older than the video database
+df["age_in_days"] = df.apply(lambda x: get_age_in_days(x, ref_date), axis="columns")
+
+top_20_of_last_month = (
+    df.loc[df["age_in_days"] <= 30]
+    .sort_values(by="tournesol_score", ascending=False)
+    .iloc[0:20]["uid"]
+)
+
+def count_videos_in_subset(uids_list, subset):
+    return subset.loc[(subset.isin(uids_list))].shape[0]
+
+
+results["top_20_of_last_month"] = results.apply(
+    lambda x: count_videos_in_subset(x, top_20_of_last_month), axis=1
+)
+
+sns.boxplot(data=results, x="top_20_of_last_month", ax=axs[1][1])
+sns.stripplot(data=results, x="top_20_of_last_month", ax=axs[1][1])
+
+axs[1][1].set_title(
+    "Videos from the top 20 of last month " + " | Total: " + str(int(results["top_20_of_last_month"].sum()))
+)
+
 
 f.suptitle("From " + str(n_sample) + " samples of " + str(bundle_size) + " videos.")
 
