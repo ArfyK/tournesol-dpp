@@ -126,8 +126,8 @@ def count_videos_within_threshold(uids_list, dataFrame, quantile, above=True):
         # returns how many videos from the uids_list have a tournesol_score below the quantile
         return (
             (
-                dataFrame["uid"].isin(uids_list) & dataFrame["tournesol_score"]
-                <= quantile
+                (dataFrame["uid"].isin(uids_list))
+                & (dataFrame["tournesol_score"] <= quantile)
             )
         ).sum()
 
@@ -146,7 +146,7 @@ axs[1].set_title(
 quantile_50 = df["tournesol_score"].quantile(0.5)
 
 results["bottom_50%"] = results.apply(
-    lambda x: count_videos_within_threshold(x, df, quantile_95, above=True), axis=1
+    lambda x: count_videos_within_threshold(x, df, quantile_50, above=False), axis=1
 )
 
 sns.boxplot(data=results, x="bottom_50%", ax=axs[2])
