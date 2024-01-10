@@ -34,7 +34,7 @@ function compute_qualities(
 	return tournesol_scores.^tournesol_scores_power + criteria_coefficient*vec(sum(max.(criteria_scores, 0), dims=2)) + recency_coefficient./ages_in_day
 	end
 
-ref_date = Date("2023-12-13", dateformat"yyyy-mm-dd")
+ref_date = Date("2023-09-19", dateformat"yyyy-mm-dd")
 
 #Data set up
 df = DataFrame(CSV.File("tournesol_scores_above_20_2023-09-18.csv"))
