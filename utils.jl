@@ -1,10 +1,6 @@
 using LinearAlgebra
 using Dates
 
-using DataFrames
-using CSV
-using Plots
-
 using Determinantal 
 
 CRITERIA = [
@@ -29,6 +25,10 @@ function quality(
 	return tournesol_score^tournesol_score_power+age_scoring(age_in_days)
 	end
 
+function get_age_in_days(date::AbstractString, ref_date::Date)::Int
+	return max((ref_date - Date(date[1:10], dateformat"yyyy-mm-dd")).value, 1)
+	end
+
 function age_scoring(f::Function;
 		     coefficient::Number=1,
 		     center::Number=0,
@@ -36,10 +36,6 @@ function age_scoring(f::Function;
 	return x -> coefficient*f((x-center)/scale)
         end
 ### L-ensemble construction
-
-function get_age_in_days(date::AbstractString, ref_date::Date)::Int
-	return max((ref_date - Date(date[1:10], dateformat"yyyy-mm-dd")).value, 1)
-	end
 
 function construct_L_Ensemble(
 			     tournesol_scores::Vector,
