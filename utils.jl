@@ -18,7 +18,7 @@ CRITERIA = [
 ### Quality Model
 function quality(
 		 age_in_days::Number,
-		 tournesol_score::Number;
+		 tournesol_score::Number,
 		 tournesol_score_power::Number,
 		 age_scoring::Function
 		 )::Number
@@ -42,9 +42,9 @@ function construct_L_Ensemble(
 			     criteria_scores::Matrix,
 			     ages_in_days::Vector;
 			     quality_function::Function=quality,
-			     quality_function_kwargs...)::EllEnsemble{Float64}
-	qualities = quality_function(tournesol_scores, ages_in_days;quality_function_kwargs...)
-
+			     quality_function_kwargs)::EllEnsemble{Float64}
+	qualities = @. quality_function(tournesol_scores, ages_in_days;quality_function_kwargs...)
+	
 	#Norm criteria scores
 	criteria_scores_norms = sqrt.(sum(abs2, criteria_scores, dims=2)) 
 	normed_criteria_scores = criteria_scores
