@@ -110,7 +110,7 @@ sns.barplot(data=selection_frequencies, x="rank", y="frequency", ax=axs[0][0])
 
 axs[0][0].set_xticks([], minor=True)
 axs[0][0].set_xticks(list(range(0, 2000, 500)))
-axs[0][0].set_title("Selection frequencies of DPP")
+axs[0][0].set_title("Selection frequencies versus rank")
 
 # Top 5%
 quantile_95 = df["tournesol_score"].quantile(0.95)

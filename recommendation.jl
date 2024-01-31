@@ -3,6 +3,7 @@ using Dates
 
 using DataFrames
 using CSV
+using Plots
 
 using Determinantal 
 
@@ -31,7 +32,7 @@ function compute_qualities(
 			   criteria_scores::Array{Float64, 2}, 
 			   ages_in_day::Array{Int64, 1}
 			   )::Array{Float64, 1}
-	return tournesol_scores.^tournesol_scores_power + criteria_coefficient*vec(sum(max.(criteria_scores, 0), dims=2)) + recency_coefficient./ages_in_day
+	return tournesol_scores.^tournesol_scores_power + criteria_coefficient*vec(sum(max.(criteria_scores, 0), dims=2)) + recency_coefficient*exp.(-((ages_in_day.-1)./30).^2)
 	end
 
 ref_date = Date("2023-09-19", dateformat"yyyy-mm-dd")
@@ -74,6 +75,17 @@ K = LowRank(X)
 
 L = EllEnsemble(K)
 
+individual_probabilities = diag(L)
+
+plot(
+     [ages_in_days tournesol_scores], 
+     individual_probabilities, seriestype=:scatter, 
+     layout=(2,1), 
+     title=["age vs proba" "tournesol_scores vs proba"], 
+     legend=false
+    )
+
+#=
 #Sample
 n_sample = 1000
 
@@ -82,8 +94,9 @@ bundle_size = 9
 results = Array{String, 2}(undef, n_sample, bundle_size)
 
 for i in 1:n_sample
-	@show "sample "*string(i)
+	println("sample "*string(i))
 	results[i,:] = df[sample(L, bundle_size), "uid"]
 end
 
 CSV.write("dpp_sampling_bundle_size="*string(bundle_size)*"_n_sample="*string(n_sample)*".csv",DataFrame(results, :auto))
+=#

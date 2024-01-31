@@ -17,8 +17,8 @@ CRITERIA = [
 
 ### Quality Model
 function quality(
+		 tournesol_score::Number;
 		 age_in_days::Number,
-		 tournesol_score::Number,
 		 tournesol_score_power::Number,
 		 age_scoring::Function
 		 )::Number
@@ -35,6 +35,7 @@ function age_scoring(f::Function;
 		     scale::Number=1)::Function
 	return x -> coefficient*f((x-center)/scale)
         end
+	
 ### L-ensemble construction
 
 function construct_L_Ensemble(
@@ -43,7 +44,7 @@ function construct_L_Ensemble(
 			     ages_in_days::Vector;
 			     quality_function::Function=quality,
 			     quality_function_kwargs)::EllEnsemble{Float64}
-	qualities = @. quality_function(tournesol_scores, ages_in_days;quality_function_kwargs...)
+	qualities = @. quality_function(tournesol_scores, ages_in_days, quality_function_kwargs...)
 	
 	#Norm criteria scores
 	criteria_scores_norms = sqrt.(sum(abs2, criteria_scores, dims=2)) 
