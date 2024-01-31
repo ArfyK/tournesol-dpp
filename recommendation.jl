@@ -75,17 +75,6 @@ K = LowRank(X)
 
 L = EllEnsemble(K)
 
-individual_probabilities = diag(L)
-
-plot(
-     [ages_in_days tournesol_scores], 
-     individual_probabilities, seriestype=:scatter, 
-     layout=(2,1), 
-     title=["age vs proba" "tournesol_scores vs proba"], 
-     legend=false
-    )
-
-#=
 #Sample
 n_sample = 1000
 
@@ -99,4 +88,3 @@ for i in 1:n_sample
 end
 
 CSV.write("dpp_sampling_bundle_size="*string(bundle_size)*"_n_sample="*string(n_sample)*".csv",DataFrame(results, :auto))
-=#
