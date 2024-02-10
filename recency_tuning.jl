@@ -42,15 +42,15 @@ top_20_last_month_indexes = findall(
 				    x->x>=sort(tournesol_scores[last_month_indexes], rev=true)[20],
 				    tournesol_scores[last_month_indexes]
 				    )
-#
+
 #Test parameters
 sample_size = 1000
 bundle_size = 9
 tournesol_scores_powers = range(start=1, length=20, stop=5)
-caracteristic_times = [30]
-discount_coefficients = [1]
+caracteristic_times = [30 2*30]
+discount_coefficients = [1 10]
 
-results = Array{Number, 2}(undef, length(tournesol_scores_powers), 9)
+results = zeros(length(tournesol_scores_powers), 9)
 results[:,1] = tournesol_scores_powers
 #2nd column will contain the total number of videos from the top 5%
 #3rd column will contain the total number of videos from the bottom 50%
@@ -61,11 +61,11 @@ results[:,1] = tournesol_scores_powers
 #8th column will contain the average selection frequency of the top 20 from last month
 #9nd column will contain the total number of videos from the top 20 of last month
 
-for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coefficients)
-	for (v, caracteristic_time) in zip(range(1, length(caracteristic_times)), caracteristic_times)
+for discount in discount_coefficients
+	for caracteristic_time in caracteristic_times
 		for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
 			#Quality model
-			qualities = (1 .+discount.*exp.(-ages_in_days./caracteristic_times)).*tournesol_scores.^power
+			qualities = (1 .+discount.*exp.(-ages_in_days./caracteristic_time)).*tournesol_scores.^power
 				
 			#Diversity model
 			criteria_scores_norms = sqrt.(sum(abs2, criteria_scores, dims=2)) 
@@ -82,7 +82,7 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 			L =  EllEnsemble(K)
 
 			#Sample
-			counts = Array{Number, 2}(undef, sample_size, 3) #number of top5%, bottom 50% and top 20 from last month in each bundle
+			counts = zeros(sample_size, 3) #number of top5%, bottom 50% and top 20 from last month in each bundle
 			video_selection_count = zeros(length(tournesol_scores))
 			for i in 1:sample_size
 				indexes = sample(L, bundle_size)
@@ -111,7 +111,7 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 				mc=:blue, 
 				xlabel="power", 
 				label="Top 5% proportion"
-				)
+			)
 			p2=plot(
 				results[:,1], 
 				results[:,3]./(sample_size*bundle_size), 
@@ -119,7 +119,7 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 				mc=:green, 
 				xlabel="power", 
 				label="Bottom 50% proportion"
-				)
+			)
 			p3=plot(
 				results[:,1], 
 				[results[:,6] results[:,4] results[:, 8]],
@@ -128,7 +128,7 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 				ylabel="selection frequency", 
 				label=["Top 5%" "Maximum" "Top 20"],
 				yminorgrid=true
-				)
+			)
 			p4=plot(
 				results[:,1], 
 				[results[:,7], results[:, 5]],
@@ -136,7 +136,7 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 				xlabel="power", 
 				ylabel="selection frequency", 
 				label=["Bottom 50%" "Minimum"]
-				)
+			)
 			p5=plot(
 				results[:,1], 
 				results[:,9]./(sample_size*bundle_size), 
@@ -144,7 +144,7 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 				mc=:blue, 
 				xlabel="power", 
 				label="Top 20 proportion"
-				)
+			)
 			plot(p1, 
 			     p2, 
 			     p3, 
@@ -153,18 +153,16 @@ for (u, discount) in zip(range(1, length(discount_coefficients)), discount_coeff
 			     layout=(3,2), 
 			     grid=true,
 			     size=(900, 600),
-			     title="Power="*string(power)*
-			     " Discount="*string(discount)*
+			     plot_title=" Discount="*string(discount)*
 			     " tau="*string(caracteristic_time)
-			    )
+			)
 			savefig("recency_tuning/"*
 				"bundlesize="*string(bundle_size)*
 				"_samplesize="*string(sample_size)*
-				"Power="*string(power)*
 				" Discount="*string(discount)*
 				" tau="*string(caracteristic_time)*
 				".png"
-				)
+			)
 		end
 	end
 end
