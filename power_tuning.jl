@@ -36,7 +36,7 @@ results[:,1] = tournesol_scores_powers
 #Second column will contain the average number of videos from the top 5%
 #Third column will contain the average number of videos from the bottom 50%
 
-for power in tournesol_scores_powers
+for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
 	#Quality model
 	qualities = tournesol_scores.^power
 		
@@ -66,7 +66,7 @@ for power in tournesol_scores_powers
 		counts[i,:] = [top_5percent_count, bottom_50percent_count]
 	end
 
-	results[power,2:3] = mean(counts, dims=1)
+	results[j,2:3] = mean(counts, dims=1)
 end
 
 #Plots 
