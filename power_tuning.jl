@@ -29,12 +29,14 @@ tournesol_scores = Vector(coalesce.(df[:, :tournesol_score], 0))
 quantile_95 = quantile!(tournesol_scores, 0.95)
 quantile_50 = quantile!(tournesol_scores, 0.50)
 
+sample_size = 1000
+bundle_size = 9
 tournesol_scores_powers = range(1, 10)
 
 results = Array{Number, 2}(undef, length(tournesol_scores_powers), 3)
 results[:,1] = tournesol_scores_powers
-#Second column will contain the average number of videos from the top 5%
-#Third column will contain the average number of videos from the bottom 50%
+#Second column will contain the total number of videos from the top 5%
+#Third column will contain the total number of videos from the bottom 50%
 
 for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
 	#Quality model
@@ -55,8 +57,6 @@ for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores
 	L =  EllEnsemble(K)
 
 	#Sample
-	sample_size = 1000
-	bundle_size = 9
 	counts = Array{Number, 2}(undef, sample_size, 2)
 
 	for i in 1:sample_size
@@ -66,18 +66,28 @@ for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores
 		counts[i,:] = [top_5percent_count, bottom_50percent_count]
 	end
 
-	results[j,2:3] = mean(counts, dims=1)
+	results[j,2:3] = sum(counts, dims=1)
 end
 
-#Plots 
+##Plots 
+#Top 5%
 p1=plot(
 	results[:,1], 
 	results[:,2], 
 	seriestype=:scatter, 
 	mc=:blue, 
 	xlabel="power", 
-	ylabel="mean count per bundle", 
-	title="Top 5%", 
+	ylabel="Total", 
+	legend=false,
+	title="Top 5%"
+	)
+p3=plot(
+	results[:,1], 
+	results[:,2]./sample_size, 
+	seriestype=:scatter, 
+	mc=:blue, 
+	xlabel="power", 
+	ylabel="Mean count per bundle", 
 	legend=false
 	)
 p2=plot(
@@ -86,9 +96,29 @@ p2=plot(
 	seriestype=:scatter, 
 	mc=:red, 
 	xlabel="power", 
-	ylabel="mean count per bundle", 
-	title="Bottom 50%", 
+	ylabel="Total", 
+	legend=false,
+	title="bottom 50%"
+	)
+p4=plot(
+	results[:,1], 
+	results[:,3]./sample_size, 
+	seriestype=:scatter, 
+	mc=:red, 
+	xlabel="power", 
+	ylabel="Total", 
 	legend=false
 	)
-plot(p1, p2, layout=(1,2), legend=false)
-savefig("power_tuning.png")
+
+plot(p1, 
+     p2, 
+     p3, 
+     p4,
+     layout=(2,2), 
+     legend=false, 
+    )
+savefig("power_tuning"*
+	"_bundlesize="*string(bundle_size)*
+	"_samplesize="*string(sample_size)*
+	".png"
+	)
