@@ -70,5 +70,13 @@ for power in tournesol_scores_powers
 end
 
 #Plots 
-
-
+plot(
+     results[:,1], 
+     [results[:,2] results[:,3]], 
+     seriestype=:scatter, 
+     label=["Top 5%" "Bottom 50%"], 
+     xlabel="power", 
+     ylabel="mean count per bundle",
+     title="Quality Model : tournesol_score^power"
+    )
+savefig("power_tuning.png")
