@@ -51,21 +51,29 @@ top_20_last_month_indexes = findall(
 #Test parameters
 sample_size = 1000
 bundle_size = 9
+
+selection_frequency_limit = 0.2
+minimum_top_20_proportion = 0.1
+maximum_top_20_proportion = 0.3
+
 tournesol_scores_powers = range(start=1, length=20, stop=5)
-caracteristic_times = range(start=30, length=10, stop=5000)
-discount_coefficients = 1
+caracteristic_times = [30 60]
+discount_coefficients = [1 10]
 
-results = zeros(length(tournesol_scores_powers), 9)
-results[:,1] = tournesol_scores_powers
-#2nd column will contain the average proportion of videos from the top 5%
-#3rd column will contain the average proportion of videos from the bottom 50%
-#4th column will contain the maximum selection frequency
-#5th column will contain the minimum selection frequency 
-#6th column will contain the average selection frequency of the top 5%
-#7th column will contain the average selection frequency of the bottom 50%
-#8th column will contain the average selection frequency of the top 20 from last month
-#9nd column will contain the average proportion of videos from the top 20 of last month
-
+filtered_results = DataFrame(
+			     discount=Float64[],
+			     caracteristic_time=Float64[],
+			     power=Float64[],
+			     prop_top_5=Float64[],
+			     prop_bottom_50=Float64[],
+			     prop_top_20_month=Float64[],
+			     maximum_selection_frequency=Float64[],
+			     minimum_selection_frequency=Float64[],
+			     average_top_5_selection_frequency=Float64[],
+			     average_bottom_50_selection_frequency=Float64[],
+			     average_top_20_month_selection_frequency=Float64[],
+			     )
+#Tests
 for discount in discount_coefficients
 	for caracteristic_time in caracteristic_times
 		for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
@@ -101,12 +109,27 @@ for discount in discount_coefficients
 				video_selection_count[indexes] .+= 1
 			end
 
-			results[j,[2 3 9]] = sum(counts, dims=1)./(sample_size*bundle_size)
-			results[j,4] = maximum(video_selection_count)./sample_size
-			results[j,5] = minimum(video_selection_count)./sample_size
-			results[j,6] = mean(video_selection_count[top_5_percent_indexes])./sample_size
-			results[j,7] = mean(video_selection_count[bottom_50_percent_indexes])./sample_size
-			results[j,8] = mean(video_selection_count[top_20_last_month_indexes])./sample_size
+			(top_5_proportion, bottom_50_proportion, top_20_proportion) = sum(counts, dims=1)./(sample_size*bundle_size)
+			maximum_selection_frequency = maximum(video_selection_count)./sample_size
+
+			if (top_20_proportion>=minimum_top_20_proportion)&& #Filter the results
+				(top_20_proportion<=maximum_top_20_proportion)&&
+				(maximum_selection_frequency <= selection_frequency_limit)
+				push!(filtered_results,
+				      (discount,
+				       caracteristic_time,
+				       power,
+				       top_5_proportion,
+				       bottom_50_proportion,
+				       top_20_proportion,
+				       maximum_selection_frequency, 
+				       minimum(video_selection_count)./sample_size,
+				       mean(video_selection_count[top_5_percent_indexes])./sample_size,
+				       mean(video_selection_count[bottom_50_percent_indexes])./sample_size,
+				       mean(video_selection_count[top_20_last_month_indexes])./sample_size
+				       )
+				      )
+			end
 
 			##Plots 
 			p1=plot(
