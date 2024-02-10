@@ -28,16 +28,22 @@ criteria_scores = Matrix(coalesce.(df[:, CRITERIA], 0))
 tournesol_scores = Vector(coalesce.(df[:, :tournesol_score], 0))
 quantile_95 = quantile!(tournesol_scores, 0.95)
 quantile_50 = quantile!(tournesol_scores, 0.50)
+top_5_percent_indexes = findall(x->x>=quantile_95, tournesol_scores)
+bottom_50_percent_indexes = findall(x->x<=quantile_50, tournesol_scores)
 
+#Test parameters
 sample_size = 1000
 bundle_size = 9
-tournesol_scores_powers = range(1, 10)
+tournesol_scores_powers = range(start=1, length=20, stop=5)
 
-results = Array{Number, 2}(undef, length(tournesol_scores_powers), 4)
+results = Array{Number, 2}(undef, length(tournesol_scores_powers), 7)
 results[:,1] = tournesol_scores_powers
-#Second column will contain the total number of videos from the top 5%
-#Third column will contain the total number of videos from the bottom 50%
-#Fourth column will contain the maximum selection frequency
+#2nd column will contain the total number of videos from the top 5%
+#3rd column will contain the total number of videos from the bottom 50%
+#4th column will contain the maximum selection frequency
+#5th column will contain the average selection frequency 
+#6th column will contain the average selection frequency of the top 5%
+#7th column will contain the average selection frequency of the bottom 50%
 
 for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
 	#Quality model
@@ -70,66 +76,63 @@ for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores
 
 	results[j,2:3] = sum(counts, dims=1)
 	results[j,4] = maximum(video_selection_count)./sample_size
+	results[j,5] = mean(video_selection_count)./sample_size
+	results[j,6] = mean(video_selection_count[top_5_percent_indexes])./sample_size
+	results[j,7] = mean(video_selection_count[bottom_50_percent_indexes])./sample_size
 end
 
 ##Plots 
 #Top 5%
 p1=plot(
 	results[:,1], 
-	results[:,2], 
+	results[:,2]./(sample_size*bundle_size), 
 	seriestype=:scatter, 
 	mc=:blue, 
 	xlabel="power", 
-	ylabel="Total", 
-	legend=false,
-	title="Top 5%"
-	)
-p3=plot(
-	results[:,1], 
-	results[:,2]./sample_size, 
-	seriestype=:scatter, 
-	mc=:blue, 
-	xlabel="power", 
-	ylabel="Mean count per bundle", 
-	legend=false
+	label="Top 5% proportion"
 	)
 p2=plot(
 	results[:,1], 
-	results[:,3], 
-	seriestype=:scatter, 
-	mc=:red, 
-	xlabel="power", 
-	ylabel="Total", 
-	legend=false,
-	title="bottom 50%"
-	)
-p4=plot(
-	results[:,1], 
-	results[:,3]./sample_size, 
-	seriestype=:scatter, 
-	mc=:red, 
-	xlabel="power", 
-	ylabel="Total", 
-	legend=false
-	)
-p5=plot(
-	results[:,1], 
-	results[:,4], 
+	results[:,3]./(sample_size*bundle_size), 
 	seriestype=:scatter, 
 	mc=:green, 
 	xlabel="power", 
-	ylabel="Maximum selection frequency", 
-	legend=false
+	label="Bottom 50% proportion"
 	)
-
-
+p3=plot(
+	results[:,1], 
+	[results[:,6] results[:,4]],
+	seriestype=:scatter, 
+	xlabel="power", 
+	ylabel="selection frequency", 
+	label=["Top 5%" "Maximum"]
+	)
+p4=plot(
+	results[:,1], 
+	results[:,7],
+	seriestype=:scatter, 
+	xlabel="power", 
+	ylabel="selection frequency", 
+	label="Bottom 50%"
+	)
+p5=plot(
+	results[:,1], 
+	results[:,5],
+	seriestype=:scatter, 
+	xlabel="power", 
+	ylabel="selection frequency", 
+	label="Average",
+	ylims=[0, 0.01],
+	mc=:black
+	)
 plot(p1, 
      p2, 
      p3, 
      p4,
      p5,
      layout=(3,2), 
-     legend=false, 
+     grid=true,
+     size=(900, 600)
     )
 savefig("power_tuning/"*
 	"bundlesize="*string(bundle_size)*
