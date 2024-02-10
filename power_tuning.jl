@@ -41,7 +41,7 @@ results[:,1] = tournesol_scores_powers
 #2nd column will contain the total number of videos from the top 5%
 #3rd column will contain the total number of videos from the bottom 50%
 #4th column will contain the maximum selection frequency
-#5th column will contain the average selection frequency 
+#5th column will contain the minimum selection frequency 
 #6th column will contain the average selection frequency of the top 5%
 #7th column will contain the average selection frequency of the bottom 50%
 
@@ -76,7 +76,7 @@ for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores
 
 	results[j,2:3] = sum(counts, dims=1)
 	results[j,4] = maximum(video_selection_count)./sample_size
-	results[j,5] = mean(video_selection_count)./sample_size
+	results[j,5] = minimum(video_selection_count)./sample_size
 	results[j,6] = mean(video_selection_count[top_5_percent_indexes])./sample_size
 	results[j,7] = mean(video_selection_count[bottom_50_percent_indexes])./sample_size
 end
@@ -109,28 +109,17 @@ p3=plot(
 	)
 p4=plot(
 	results[:,1], 
-	results[:,7],
+	[results[:,7], results[:, 5]],
 	seriestype=:scatter, 
 	xlabel="power", 
 	ylabel="selection frequency", 
-	label="Bottom 50%"
-	)
-p5=plot(
-	results[:,1], 
-	results[:,5],
-	seriestype=:scatter, 
-	xlabel="power", 
-	ylabel="selection frequency", 
-	label="Average",
-	ylims=[0, 0.01],
-	mc=:black
+	label=["Bottom 50%" "Minimum"]
 	)
 plot(p1, 
      p2, 
      p3, 
      p4,
-     p5,
-     layout=(3,2), 
+     layout=(2,2), 
      grid=true,
      size=(900, 600)
     )
