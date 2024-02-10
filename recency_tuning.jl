@@ -52,19 +52,19 @@ top_20_last_month_indexes = findall(
 sample_size = 1000
 bundle_size = 9
 tournesol_scores_powers = range(start=1, length=20, stop=5)
-caracteristic_times = [30]
-discount_coefficients = range(start=10, length=10, stop=1000000)
+caracteristic_times = range(start=30, length=10, stop=5000)
+discount_coefficients = 1
 
 results = zeros(length(tournesol_scores_powers), 9)
 results[:,1] = tournesol_scores_powers
-#2nd column will contain the total number of videos from the top 5%
-#3rd column will contain the total number of videos from the bottom 50%
+#2nd column will contain the average proportion of videos from the top 5%
+#3rd column will contain the average proportion of videos from the bottom 50%
 #4th column will contain the maximum selection frequency
 #5th column will contain the minimum selection frequency 
 #6th column will contain the average selection frequency of the top 5%
 #7th column will contain the average selection frequency of the bottom 50%
 #8th column will contain the average selection frequency of the top 20 from last month
-#9nd column will contain the total number of videos from the top 20 of last month
+#9nd column will contain the average proportion of videos from the top 20 of last month
 
 for discount in discount_coefficients
 	for caracteristic_time in caracteristic_times
@@ -101,7 +101,7 @@ for discount in discount_coefficients
 				video_selection_count[indexes] .+= 1
 			end
 
-			results[j,[2 3 9]] = sum(counts, dims=1)
+			results[j,[2 3 9]] = sum(counts, dims=1)./(sample_size*bundle_size)
 			results[j,4] = maximum(video_selection_count)./sample_size
 			results[j,5] = minimum(video_selection_count)./sample_size
 			results[j,6] = mean(video_selection_count[top_5_percent_indexes])./sample_size
@@ -111,7 +111,7 @@ for discount in discount_coefficients
 			##Plots 
 			p1=plot(
 				results[:,1], 
-				results[:,2]./(sample_size*bundle_size), 
+				results[:,2], 
 				seriestype=:scatter, 
 				mc=:blue, 
 				xlabel="power", 
@@ -119,7 +119,7 @@ for discount in discount_coefficients
 			)
 			p2=plot(
 				results[:,1], 
-				results[:,3]./(sample_size*bundle_size), 
+				results[:,3], 
 				seriestype=:scatter, 
 				mc=:green, 
 				xlabel="power", 
@@ -144,7 +144,7 @@ for discount in discount_coefficients
 			)
 			p5=plot(
 				results[:,1], 
-				results[:,9]./(sample_size*bundle_size), 
+				results[:,9], 
 				seriestype=:scatter, 
 				mc=:blue, 
 				xlabel="power", 
