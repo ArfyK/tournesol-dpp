@@ -33,10 +33,11 @@ sample_size = 1000
 bundle_size = 9
 tournesol_scores_powers = range(1, 10)
 
-results = Array{Number, 2}(undef, length(tournesol_scores_powers), 3)
+results = Array{Number, 2}(undef, length(tournesol_scores_powers), 4)
 results[:,1] = tournesol_scores_powers
 #Second column will contain the total number of videos from the top 5%
 #Third column will contain the total number of videos from the bottom 50%
+#Fourth column will contain the maximum selection frequency
 
 for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
 	#Quality model
@@ -57,16 +58,18 @@ for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores
 	L =  EllEnsemble(K)
 
 	#Sample
-	counts = Array{Number, 2}(undef, sample_size, 2)
-
+	counts = Array{Number, 2}(undef, sample_size, 2) #number of top5% and bottom 50% in each bundle
+	video_selection_count = zeros(length(tournesol_scores))
 	for i in 1:sample_size
 		indexes = sample(L, bundle_size)
 		top_5percent_count = sum(tournesol_scores[indexes].>=quantile_95)
 		bottom_50percent_count = sum(tournesol_scores[indexes].<=quantile_50)
 		counts[i,:] = [top_5percent_count, bottom_50percent_count]
+		video_selection_count[indexes] .+= 1
 	end
 
 	results[j,2:3] = sum(counts, dims=1)
+	results[j,4] = maximum(video_selection_count)./sample_size
 end
 
 ##Plots 
@@ -109,12 +112,23 @@ p4=plot(
 	ylabel="Total", 
 	legend=false
 	)
+p5=plot(
+	results[:,1], 
+	results[:,4], 
+	seriestype=:scatter, 
+	mc=:green, 
+	xlabel="power", 
+	ylabel="Maximum selection frequency", 
+	legend=false
+	)
+
 
 plot(p1, 
      p2, 
      p3, 
      p4,
-     layout=(2,2), 
+     p5,
+     layout=(3,2), 
      legend=false, 
     )
 savefig("power_tuning"*
