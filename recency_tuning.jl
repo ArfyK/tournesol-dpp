@@ -37,18 +37,23 @@ bottom_50_percent_indexes = findall(x->x<=quantile_50, tournesol_scores)
 
 ref_date = Date("2023-09-19", dateformat"yyyy-mm-dd")#one day older than the database
 ages_in_days = get_age_in_days.(df[:, :publication_date], ref_date)
+#Hack to get the indices from the top 20 of last month 
+#without using dataframes operations...
 last_month_indexes = findall(x->x<=30, ages_in_days)
+top_20_last_month_minimum_score = sort(tournesol_scores[last_month_indexes], rev=true)[20]
+is_less_than_30_days_old = ages_in_days .<= 30
+is_more_than_minimum_score = tournesol_scores.>=top_20_last_month_minimum_score
 top_20_last_month_indexes = findall(
-				    x->x>=sort(tournesol_scores[last_month_indexes], rev=true)[20],
-				    tournesol_scores[last_month_indexes]
+				    x->x==1,
+				    is_less_than_30_days_old.*is_more_than_minimum_score
 				    )
 
 #Test parameters
 sample_size = 1000
 bundle_size = 9
 tournesol_scores_powers = range(start=1, length=20, stop=5)
-caracteristic_times = [30 2*30]
-discount_coefficients = [1 10]
+caracteristic_times = [30]
+discount_coefficients = range(start=10, length=10, stop=1000000)
 
 results = zeros(length(tournesol_scores_powers), 9)
 results[:,1] = tournesol_scores_powers
