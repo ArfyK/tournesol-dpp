@@ -131,8 +131,8 @@ plot(p1,
      layout=(3,2), 
      legend=false, 
     )
-savefig("power_tuning"*
-	"_bundlesize="*string(bundle_size)*
+savefig("power_tuning/"*
+	"bundlesize="*string(bundle_size)*
 	"_samplesize="*string(sample_size)*
 	".png"
 	)
