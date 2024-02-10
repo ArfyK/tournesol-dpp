@@ -7,6 +7,7 @@
 Enforcing diversity in recommended video bundles using Determinantal Point Processes.
 
 Quality model : q=tournesol_score^power
+
 Diversity model : normed criteria vector c
 
 Thus each video is represented by the vector qc.
