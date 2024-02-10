@@ -131,67 +131,8 @@ for discount in discount_coefficients
 				      )
 			end
 
-			##Plots 
-			p1=plot(
-				results[:,1], 
-				results[:,2], 
-				seriestype=:scatter, 
-				mc=:blue, 
-				xlabel="power", 
-				label="Top 5% proportion"
-			)
-			p2=plot(
-				results[:,1], 
-				results[:,3], 
-				seriestype=:scatter, 
-				mc=:green, 
-				xlabel="power", 
-				label="Bottom 50% proportion"
-			)
-			p3=plot(
-				results[:,1], 
-				[results[:,6] results[:,4] results[:, 8]],
-				seriestype=:scatter, 
-				xlabel="power", 
-				ylabel="selection frequency", 
-				label=["Top 5%" "Maximum" "Top 20"],
-				yminorgrid=true
-			)
-			p4=plot(
-				results[:,1], 
-				[results[:,7], results[:, 5]],
-				seriestype=:scatter, 
-				xlabel="power", 
-				ylabel="selection frequency", 
-				label=["Bottom 50%" "Minimum"]
-			)
-			p5=plot(
-				results[:,1], 
-				results[:,9], 
-				seriestype=:scatter, 
-				mc=:blue, 
-				xlabel="power", 
-				label="Top 20 proportion"
-			)
-			plot(p1, 
-			     p2, 
-			     p3, 
-			     p4,
-			     p5,
-			     layout=(3,2), 
-			     grid=true,
-			     size=(900, 600),
-			     plot_title=" Discount="*string(discount)*
-			     " tau="*string(caracteristic_time)
-			)
-			savefig("recency_tuning/"*
-				"bundlesize="*string(bundle_size)*
-				"_samplesize="*string(sample_size)*
-				" Discount="*string(discount)*
-				" tau="*string(caracteristic_time)*
-				".png"
-			)
 		end
 	end
 end
 
+println(filtered_results)
