@@ -105,7 +105,8 @@ p3=plot(
 	seriestype=:scatter, 
 	xlabel="power", 
 	ylabel="selection frequency", 
-	label=["Top 5%" "Maximum"]
+	label=["Top 5%" "Maximum"],
+	yminorgrid=true
 	)
 p4=plot(
 	results[:,1], 
