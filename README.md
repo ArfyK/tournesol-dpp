@@ -71,7 +71,9 @@ First set the tests parameters in the script:
 Run the script:
 `/path/to/julia recency_tuning.jl` 
 
-This will create a csv file containing the results in the recency_tuning directory.
+This will create two files in the recency_tuning directory:
+  - a csv file containing the results;
+  - a scatter plot of the proportion of videos from the top 20 of last month versus the maximum selection frequency.
 
 ## Results analysis
 
