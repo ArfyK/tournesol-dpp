@@ -57,8 +57,8 @@ minimum_top_20_proportion = 0.1
 maximum_top_20_proportion = 0.3
 
 tournesol_scores_powers = range(start=1, length=20, stop=5)
-caracteristic_times = [30 60]
-discount_coefficients = [1 10]
+caracteristic_times = range(start=1, length=100, stop=5000)
+discount_coefficients = range(start=1e-3, length=100, stop=100)
 
 filtered_results = DataFrame(
 			     discount=Float64[],
