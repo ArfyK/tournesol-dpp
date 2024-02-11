@@ -3,14 +3,14 @@
   - Without recency
   - With recency
 
-### Introduction
+## Introduction
 Enforcing diversity in recommended video bundles using Determinantal Point Processes.
 
 Tests are performed on the dataset `tournesol_scores_above_20_2023-09-18.csv`.
 
-### Without recency 
+## Without recency 
 
-## Model
+# Model
 
 Quality model : q=tournesol_score^power
 
@@ -20,7 +20,7 @@ Thus each video is represented by the vector qc.
 
 This model has one parameter which is tuned with the script `power_tuning.jl`.
 
-## How to use `power_tuning.jl`
+# How to use `power_tuning.jl`
 
 First set the tests parameters in the script:
   - the number sample `sample_size`;
@@ -32,7 +32,7 @@ Run the script:
 
 This will create the file `/power_tuning/bundlesize=<bundle_size>_samplesize=<sample_size>.png` gathering plots.
 
-## Results analysis
+# Results analysis
 
 Targets :
   1) videos from the top 5% should appear in about 3% of bundles, that is (?) each bundle should contain 25% of videos from the top 5%;
@@ -44,9 +44,9 @@ On `/power_tuning/bundlesize=<bundle_size>_samplesize=<sample_size>.png` we obse
   - the power should be below 4.5 to satisfy target 3 (cf graph (2,1)); 
   - the power should be above slightly less than 2 to satisfy target 1.
 
-### With recency 
+## With recency 
 
-## Model
+# Model
 
 Quality model : q=tournesol_score^power*(1 + discount*exp(-age/caracteristic_time))
 
@@ -56,7 +56,7 @@ Thus each video is represented by the vector qc.
 
 This model has three parametere which can be tuned with the script `recency_tuning.jl`.
 
-## How to use `recency_tuning.jl`
+# How to use `recency_tuning.jl`
 
 Disclaimer : some parts of the script are unnecessarily complex because I initially misunderstood how to use `DataFrames.jl`.
 
@@ -73,7 +73,7 @@ Run the script:
 
 This will some files at `/recency_tuning/bundlesize=<bundle_size>_samplesize=<sample_size>_discount=<discount>_caracteristic_time=<caracteristic_time>.png` gathering plots showing filtered results.
 
-## Results analysis
+# Results analysis
 
 Targets :
   1) videos from the top 5% should appear in about 3% of bundles, that is (?) each bundle should contain 25% of videos from the top 5%;
