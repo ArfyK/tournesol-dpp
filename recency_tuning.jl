@@ -130,9 +130,74 @@ for discount in discount_coefficients
 				       )
 				      )
 			end
-
+		end
+		##Plots 
+		subset_filtered_results = filter(
+						 row->(row.discount==discount)
+						 &&(row.caracteristic_time==caracteristic_time),
+						 filtered_results
+						 )
+		if !isempty(subset_filtered_results)
+			p1=plot(
+				subset_filtered_results[:,:power], 
+				subset_filtered_results[:,:prop_top_5], 
+				seriestype=:scatter, 
+				mc=:blue, 
+				xlabel="power", 
+				label="Top 5% proportion"
+			)
+			p2=plot(
+				subset_filtered_results[:,:power],
+				subset_filtered_results[:,:prop_bottom_50],
+				seriestype=:scatter, 
+				mc=:green, 
+				xlabel="power", 
+				label="Bottom 50% proportion"
+			)
+			p3=plot(
+				subset_filtered_results[:,:power],
+				[subset_filtered_results[:,:average_top_5_selection_frequency] subset_filtered_results[:,:maximum_selection_frequency] subset_filtered_results[:, :average_top_20_month_selection_frequency]],
+				seriestype=:scatter, 
+				xlabel="power", 
+				ylabel="selection frequency", 
+				label=["Top 5%" "Maximum" "Top 20"],
+				yminorgrid=true
+			)
+			p4=plot(
+				subset_filtered_results[:,:power],
+				[subset_filtered_results[:,:average_bottom_50_selection_frequency], subset_filtered_results[:, :minimum_selection_frequency]],
+				seriestype=:scatter, 
+				xlabel="power", 
+				ylabel="selection frequency", 
+				label=["Bottom 50%" "Minimum"]
+			)
+			p5=plot(
+				subset_filtered_results[:,:power],
+				subset_filtered_results[:,:prop_top_20_month], 
+				seriestype=:scatter, 
+				mc=:blue, 
+				xlabel="power", 
+				label="Top 20 proportion"
+			)
+			plot(p1, 
+			     p2, 
+			     p3, 
+			     p4,
+			     p5,
+			     layout=(3,2), 
+			     grid=true,
+			     size=(900, 600),
+			     plot_title=" Discount="*string(discount)*
+			     " tau="*string(caracteristic_time)
+			)
+			savefig("recency_tuning/"*
+				"bundlesize="*string(bundle_size)*
+				"_samplesize="*string(sample_size)*
+				" Discount="*string(discount)*
+				" tau="*string(caracteristic_time)*
+				".png"
+			)
 		end
 	end
 end
 
-println(filtered_results)
