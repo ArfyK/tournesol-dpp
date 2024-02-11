@@ -56,9 +56,15 @@ selection_frequency_limit = 0.2
 minimum_top_20_proportion = 0.1
 maximum_top_20_proportion = 0.3
 
+#=
 tournesol_scores_powers = range(start=1, length=20, stop=5)
 caracteristic_times = range(start=1, length=100, stop=5000)
 discount_coefficients = range(start=1e-3, length=100, stop=100)
+=#
+
+tournesol_scores_powers = range(start=1, length=1, stop=1)
+caracteristic_times = range(start=1, length=1, stop=1)
+discount_coefficients = range(start=1, length=1, stop=1)
 
 filtered_results = DataFrame(
 			     discount=Float64[],
@@ -197,9 +203,15 @@ for discount in discount_coefficients
 				" tau="*string(caracteristic_time)*
 				".png"
 			)
-			=#
 		end
+		=#
 	end
 end
 
-
+CSV.write("recency_tuning/filtered_results_"*
+	  "discount_["*string(Float64(discount_coefficients.ref))*","*string(Float64(discount_coefficients.ref+(discount_coefficients.len-1)*discount_coefficients.step))*"]_"*
+	  "caracteristic_times_["*string(Float64(caracteristic_times.ref))*","*string(Float64(caracteristic_times.ref+(caracteristic_times.len-1)*caracteristic_times.step))*"]_"*
+	  "tournesol_scores_powers_["*string(Float64(tournesol_scores_powers.ref))*","*string(Float64(tournesol_scores_powers.ref+(tournesol_scores_powers.len-1)*tournesol_scores_powers.step))*
+	  "].csv",
+	  filtered_results  
+	  )
