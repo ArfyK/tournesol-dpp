@@ -62,8 +62,8 @@ caracteristic_times = range(start=1, length=100, stop=5000)
 discount_coefficients = range(start=1e-3, length=100, stop=100)
 =#
 
-tournesol_scores_powers = range(start=1, length=5, stop=5)
-caracteristic_times = range(start=30, length=5, stop=100)
+tournesol_scores_powers = range(start=1, length=2, stop=5)
+caracteristic_times = range(start=30, length=2, stop=100)
 discount_coefficients = range(start=1, length=2, stop=10)
 
 filtered_results = DataFrame(
@@ -80,9 +80,16 @@ filtered_results = DataFrame(
 			     average_top_20_month_selection_frequency=Float64[],
 			     )
 #Tests
+n_parameter_sets = discount_coefficients.len*caracteristic_times.len*tournesol_scores_powers.len
+current_parameter_set = 0
+
 for discount in discount_coefficients
 	for caracteristic_time in caracteristic_times
 		for (j, power) in zip(range(1,length(tournesol_scores_powers)), tournesol_scores_powers)
+			#Indication about the remaining tests
+			global current_parameter_set += 1
+			println("Testing parameter set "*string(current_parameter_set)*" out of "*string(n_parameter_sets))
+
 			#Quality model
 			qualities = (1 .+discount.*exp.(-ages_in_days./caracteristic_time)).*tournesol_scores.^power
 				
