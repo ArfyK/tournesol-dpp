@@ -10,7 +10,7 @@ Tests are performed on the dataset `tournesol_scores_above_20_2023-09-18.csv`.
 
 ### Without recency 
 
-##Model
+## Model
 
 Quality model : q=tournesol_score^power
 
@@ -46,7 +46,7 @@ On `/power_tuning/bundlesize=<bundle_size>_samplesize=<sample_size>.png` we obse
 
 ### With recency 
 
-##Model
+## Model
 
 Quality model : q=tournesol_score^power*(1 + discount*exp(-age/caracteristic_time))
 
