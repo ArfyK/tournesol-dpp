@@ -131,7 +131,7 @@ for discount in discount_coefficients
 				      )
 			end
 		end
-		##Plots 
+		#=Plots 
 		subset_filtered_results = filter(
 						 row->(row.discount==discount)
 						 &&(row.caracteristic_time==caracteristic_time),
@@ -197,7 +197,9 @@ for discount in discount_coefficients
 				" tau="*string(caracteristic_time)*
 				".png"
 			)
+			=#
 		end
 	end
 end
+
 
