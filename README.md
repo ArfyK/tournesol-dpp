@@ -71,7 +71,7 @@ First set the tests parameters in the script:
 Run the script:
 `/path/to/julia recency_tuning.jl` 
 
-This will some files at `/recency_tuning/bundlesize=<bundle_size>_samplesize=<sample_size>_discount=<discount>_caracteristic_time=<caracteristic_time>.png` gathering plots showing filtered results.
+This will create a csv file containing the results in the recency_tuning directory.
 
 ## Results analysis
 
