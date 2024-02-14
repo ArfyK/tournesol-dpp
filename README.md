@@ -73,7 +73,29 @@ Run the script:
 
 This will create two files in the recency_tuning directory:
   - a csv file containing the results;
-  - a scatter plot of the proportion of videos from the top 20 of last month versus the maximum selection frequency.
+  - a png gathering scatter plots about the proportion of videos from the top 20 of last month versus the maximum selection frequency and parameter values.
+
+## How to get further information about the results
+
+Once the tests are run you can get further information in the julia REPL by running:
+
+`
+using DataFrames
+using CSV
+df = DataFrame(CSV.File(<results_file>.csv))
+sort(df, :prop_top_20_month, rev=true)[1:20,[:discount, :caracteristic_time, :power, :prop_top_20_month]]
+`
+
+This will display 20 parameter sets giving the highest proportion of videos from the top 20 of last month per bundle.
+
+To plot details about those parameter sets you can run:
+
+`
+include("utils.jl")
+plot_parameters_sets_details(df, sort(df, :prop_top_20_month, rev=true)[1:10,[:discount, :caracteristic_time]])
+`
+
+This will create 1 plot per parameter set in the recency_tuning directory.
 
 ## Results analysis
 
