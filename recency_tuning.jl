@@ -8,6 +8,8 @@ using Plots
 
 using Determinantal 
 
+include("utils.jl")
+
 CRITERIA = [
     "reliability",
     "importance",
@@ -147,21 +149,6 @@ for discount in discount_coefficients
 	end
 end
 
-plot(
-     filtered_results[:,:prop_top_20_month], 
-     filtered_results[:, :maximum_selection_frequency],
-     seriestype=:scatter,
-     xlabel="Top 20 proportion",
-     ylabel="Maximum selection frequency",
-     legend=false
-    )
-savefig("recency_tuning/top20_prop_vs_max_selection_freq_"*
-	"discount_["*string(Float64(discount_coefficients.ref))*","*string(Float64(discount_coefficients.ref+(discount_coefficients.len-1)*discount_coefficients.step))*"]_"*
-	"caracteristic_times_["*string(Float64(caracteristic_times.ref))*","*string(Float64(caracteristic_times.ref+(caracteristic_times.len-1)*caracteristic_times.step))*"]_"*
-	"tournesol_scores_powers_["*string(Float64(tournesol_scores_powers.ref))*","*string(Float64(tournesol_scores_powers.ref+(tournesol_scores_powers.len-1)*tournesol_scores_powers.step))*
-	  "].png"
-	  )
-
 CSV.write("recency_tuning/filtered_results_"*
 	  "discount_["*string(Float64(discount_coefficients.ref))*","*string(Float64(discount_coefficients.ref+(discount_coefficients.len-1)*discount_coefficients.step))*"]_"*
 	  "caracteristic_times_["*string(Float64(caracteristic_times.ref))*","*string(Float64(caracteristic_times.ref+(caracteristic_times.len-1)*caracteristic_times.step))*"]_"*
@@ -169,3 +156,11 @@ CSV.write("recency_tuning/filtered_results_"*
 	  "].csv",
 	  filtered_results  
 	  )
+
+plot_general_results(filtered_results,
+		     discount_coefficients,
+		     caracteristic_times,
+		     tournesol_scores_powers
+		     )
+
+
