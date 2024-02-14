@@ -2,7 +2,8 @@ using DataFrames
 using CSV
 using Plots
 
-function plot_recency_results(
+#Plots
+function plot_parameters_sets_details(
 			      df,
 			      parameters_sets
 			      )
