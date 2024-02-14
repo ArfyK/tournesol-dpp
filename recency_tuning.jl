@@ -58,9 +58,9 @@ selection_frequency_limit = 0.2
 minimum_top_20_proportion = 0.1
 maximum_top_20_proportion = 0.3
 
-tournesol_scores_powers = range(start=5, length=15, stop=10)
-caracteristic_times = range(start=1, length=37, stop=5000)
-discount_coefficients = range(start=1e-3, length=37, stop=100)
+tournesol_scores_powers = range(start=1, length=10, stop=5)
+caracteristic_times = range(start=1, length=20, stop=5000)
+discount_coefficients = range(start=100, length=50, stop=100000)
 
 #=
 tournesol_scores_powers = range(start=1, length=2, stop=5) #Parameters for
