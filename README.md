@@ -81,8 +81,11 @@ Once the tests are run you can get further information in the julia REPL by runn
 
 `
 using DataFrames
+
 using CSV
+
 df = DataFrame(CSV.File(<results_file>.csv))
+
 sort(df, :prop_top_20_month, rev=true)[1:20,[:discount, :caracteristic_time, :power, :prop_top_20_month]]
 `
 
@@ -92,6 +95,7 @@ To plot details about those parameter sets you can run:
 
 `
 include("utils.jl")
+
 plot_parameters_sets_details(df, sort(df, :prop_top_20_month, rev=true)[1:10,[:discount, :caracteristic_time]])
 `
 
