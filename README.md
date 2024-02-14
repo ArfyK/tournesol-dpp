@@ -104,3 +104,16 @@ Targets :
   2) videos of the top 5% should appear 10 times as much in bundles as the lower 50%.
   3) no video should be selected more than 20% of the time.
   4) videos from the top 20 of the month should appear in about 20% (10% - 30%) of the bundles.
+
+### discount in [1e-3, 100], caracteristic time in [1, 5000], power in [1, 5]
+
+Observations:
+  - the higher top 20 proportion is about 18%;
+  - the discount value does not seem to impact it.
+
+### discount in [1e-3, 100], caracteristic time in [1, 5000], power in [5, 10]
+
+Observation:
+  - the higher top 20 proportion is about 11%;
+
+
