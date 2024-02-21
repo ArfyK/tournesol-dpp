@@ -13,7 +13,8 @@ from utils import get_age_in_days, CRITERIA
 
 
 #### DATA SET UP ####
-df = pd.read_csv(sys.argv[1])
+# df = pd.read_csv(sys.argv[1])
+df = pd.read_csv("tournesol_scores_above_20_2023-09-18.csv")
 
 # Model parameters
 power = 1.6
