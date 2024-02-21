@@ -16,9 +16,9 @@ from utils import get_age_in_days, CRITERIA
 df = pd.read_csv(sys.argv[1])
 
 # Model parameters
-power = 1
-discount = 10
-caracteristic_time = 5
+power = 1.6
+discount = 4
+caracteristic_time = 205
 
 # Quality model
 tournesol_scores = df["tournesol_score"].to_numpy()
