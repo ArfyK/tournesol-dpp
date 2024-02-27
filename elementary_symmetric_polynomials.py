@@ -1,5 +1,4 @@
 # Implements the algorithm describe in "DPP for Machine Learning" in section 5.2.3 computing the singleton marginals of a k-dpp
-
 import numpy as np
 
 
@@ -13,7 +12,7 @@ class Node:
     ):
         self.indexes = indexes
         self.eigenvalues = eigenvalues
-        self.elementary_symmetric_polynomials = np.nan 
+        self.elementary_symmetric_polynomials = np.array(np.nan)
         self.left_child = left_child
         self.right_child = right_child
 
@@ -37,16 +36,27 @@ class Node:
                 ([1], self.eigenvalues, np.zeros(k - 1))
             )
         else:
-            if np.isnan(self.right_child.elementary_symmetric_polynomials):
+            if self.right_child.elementary_symmetric_polynomials.all():
                 self.right_child.compute_elementary_symmetric_polynomials(k)
-            if np.isnan(self.left_child.elementary_symmetric_polynomials):
+            if self.left_child.elementary_symmetric_polynomials.all():
                 self.left_child.compute_elementary_symmetric_polynomials(k)
-            self.elementary_symmetric_polynomials = np.zeros(k+1)
-            for i in range(k+1):
+            self.elementary_symmetric_polynomials = np.zeros(k + 1)
+            for i in range(k + 1):
                 self.elementary_symmetric_polynomials[i] = np.dot(
-                    self.left_child.elementary_symmetric_polynomials[:i+1],
-                    np.flip(self.right_child.elementary_symmetric_polynomials[:i+1]),
+                    self.left_child.elementary_symmetric_polynomials[: i + 1],
+                    np.flip(self.right_child.elementary_symmetric_polynomials[: i + 1]),
                 )
+
+    def remove_path(self, index):
+        if index in self.indexes:
+            if self.left_child.indexes == [index]:
+                self = self.right_child
+            elif self.right_child.indexes == [index]:
+                self = self.left_child
+            else:
+                self.elementary_symmetric_polynomials = np.array(np.nan)
+                self.left_child.remove_path(index)
+                self.right_child.remove_path(index)
 
 
 class BinaryTree:

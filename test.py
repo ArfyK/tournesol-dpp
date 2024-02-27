@@ -1,9 +1,11 @@
+import copy
+
 import numpy as np
 
 from dppy.exact_sampling import elementary_symmetric_polynomials
 from elementary_symmetric_polynomials import Node, BinaryTree
 
-n = 2
+n = 3
 indexes = list(range(n))
 eigenvalues = np.random.default_rng().normal(10, 10, n)
 
@@ -35,15 +37,32 @@ except:
 print("\n")
 
 print("Test the computation of elementary symmetric polynomials")
-try:
-    bt.root.compute_elementary_symmetric_polynomials(n)
-    #print(bt.root.elementary_symmetric_polynomials)
-    #print(bt.root.right_child.elementary_symmetric_polynomials)
-    #print(bt.root.left_child.elementary_symmetric_polynomials)
+bt.root.compute_elementary_symmetric_polynomials(n)
+# print(bt.root.elementary_symmetric_polynomials)
+# print(bt.root.right_child.elementary_symmetric_polynomials)
+# print(bt.root.left_child.elementary_symmetric_polynomials)
 
-    esp = elementary_symmetric_polynomials(bt.root.eigenvalues, n)
-    #print(esp)
-    for i in range(n+1):
+esp = elementary_symmetric_polynomials(bt.root.eigenvalues, n)
+# print(esp)
+for i in range(n + 1):
+    try:
         assert bt.root.elementary_symmetric_polynomials[i] == esp[i][n]
-except:
-    pass
+    except AssertionError:
+        print(bt.root.elementary_symmetric_polynomials[i])
+        print(esp[i][n])
+
+print("\n")
+print("Test the path removing algorithm")
+for i in range(n):
+    bt_copy = copy.deepcopy(bt)
+    bt_copy.root.remove_path(i)
+    bt_copy.root.compute_elementary_symmetric_polynomials(n - 1)
+    esp = elementary_symmetric_polynomials(
+        np.concatenate((bt.root.eigenvalues[:i], bt.root.eigenvalues[i + 1 :])), n - 1
+    )
+    for i in range(n):
+        try:
+            assert bt.root.elementary_symmetric_polynomials[i] == esp[i][n - 1]
+        except AssertionError:
+            print(bt.root.elementary_symmetric_polynomials[i])
+            print(esp[i][n - 1])
