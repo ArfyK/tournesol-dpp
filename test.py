@@ -1,12 +1,13 @@
 import numpy as np
 
-from symmetric_polynomials import Node
+from symmetric_polynomials import Node, BinaryTree
 
 n = 3
 indexes = list(range(n))
 eigenvalues = np.random.default_rng().normal(10, 10, n)
 
-node = Node(indexes=indexes, eigenvalues=eigenvalues)
+bt = BinaryTree(eigenvalues)
+node = bt.root
 
 print(node.indexes)
 print(node.eigenvalues)

@@ -36,5 +36,6 @@ class Node:
 class BinaryTree:
     def __init__(self, eigenvalues):
         self.root = Node(eigenvalues=eigenvalues, indexes=list(range(eigenvalues.size)))
-        current_node = self.root
-        current_indexes = list(range(eigenvalues))
+        self.root.create_children(eigenvalues)
+
+
