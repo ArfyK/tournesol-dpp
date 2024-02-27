@@ -8,13 +8,12 @@ class Node:
         self,
         indexes=None,
         eigenvalues=None,
-        symmetric_polynomials=None,
         left_child=None,
         right_child=None,
     ):
         self.indexes = indexes
         self.eigenvalues = eigenvalues
-        self.symmetric_polynomials = symmetric_polynomials
+        self.elementary_symmetric_polynomials = None
         self.left_child = left_child
         self.right_child = right_child
 
@@ -32,10 +31,23 @@ class Node:
             )
             self.left_child.create_children(eigenvalues)
 
+    def compute_elementary_symmetric_polynomials(self, k):
+        if len(self.indexes) == 1:
+            self.elementary_symmetric_polynomials = np.concatenate(
+                ([1], self.eigenvalues, np.zeros(k - 1))
+            )
+        else:
+            self.right_child.compute_elementary_symmetric_polynomials(k)
+            self.left_child.compute_elementary_symmetric_polynomials(k)
+            self.elementary_symmetric_polynomials = np.zeros(k+1)
+            for i in range(k+1):
+                self.elementary_symmetric_polynomials[i] = np.dot(
+                    self.left_child.elementary_symmetric_polynomials[:i+1],
+                    np.flip(self.right_child.elementary_symmetric_polynomials[:i+1]),
+                )
+
 
 class BinaryTree:
     def __init__(self, eigenvalues):
         self.root = Node(eigenvalues=eigenvalues, indexes=list(range(eigenvalues.size)))
         self.root.create_children(eigenvalues)
-
-
