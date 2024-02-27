@@ -13,7 +13,7 @@ class Node:
     ):
         self.indexes = indexes
         self.eigenvalues = eigenvalues
-        self.elementary_symmetric_polynomials = None
+        self.elementary_symmetric_polynomials = np.nan 
         self.left_child = left_child
         self.right_child = right_child
 
@@ -37,8 +37,10 @@ class Node:
                 ([1], self.eigenvalues, np.zeros(k - 1))
             )
         else:
-            self.right_child.compute_elementary_symmetric_polynomials(k)
-            self.left_child.compute_elementary_symmetric_polynomials(k)
+            if np.isnan(self.right_child.elementary_symmetric_polynomials):
+                self.right_child.compute_elementary_symmetric_polynomials(k)
+            if np.isnan(self.left_child.elementary_symmetric_polynomials):
+                self.left_child.compute_elementary_symmetric_polynomials(k)
             self.elementary_symmetric_polynomials = np.zeros(k+1)
             for i in range(k+1):
                 self.elementary_symmetric_polynomials[i] = np.dot(
