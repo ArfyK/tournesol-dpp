@@ -60,9 +60,8 @@ for i in range(n):
     esp = elementary_symmetric_polynomials(
         np.concatenate((bt.root.eigenvalues[:i], bt.root.eigenvalues[i + 1 :])), n - 1
     )
-    for i in range(n):
-        try:
-            assert bt.root.elementary_symmetric_polynomials[i] == esp[i][n - 1]
-        except AssertionError:
-            print(bt.root.elementary_symmetric_polynomials[i])
-            print(esp[i][n - 1])
+    try:
+        assert np.array_equal(bt_copy.root.elementary_symmetric_polynomials[i], esp[:,n - 1])
+    except AssertionError:
+        print(bt_copy.root.elementary_symmetric_polynomials)
+        print(esp[:,n - 1])
