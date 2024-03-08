@@ -41,8 +41,8 @@ Targets :
 
 On `/power_tuning/bundlesize=<bundle_size>_samplesize=<sample_size>.png` we observe that :
   - target 2 is always satisfied (cf graphs (1, 1) and (1, 2));
-  - the power should be below 4.5 to satisfy target 3 (cf graph (2,1)); 
-  - the power should be above slightly less than 2 to satisfy target 1.
+  - the power should be below 5 to satisfy target 3 (cf graph (2,1)); 
+  - the power should be above around 2 to satisfy target 1.
 
 # With recency 
 
