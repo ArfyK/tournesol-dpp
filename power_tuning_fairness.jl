@@ -70,7 +70,7 @@ end
 println("Plotting")
 p1=plot(
 	tournesol_scores, 
-	frequencies/(sample_size*bundle_size), 
+	frequencies/sample_size, 
 	seriestype=:scatter, 
 	mc=:blue, 
 	xlabel="Tournesol score", 
