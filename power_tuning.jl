@@ -34,7 +34,7 @@ bottom_50_percent_indexes = findall(x->x<=quantile_50, tournesol_scores)
 #Test parameters
 sample_size = 1000
 bundle_size = 9
-tournesol_scores_powers = range(start=1, length=20, stop=5)
+tournesol_scores_powers = range(start=1, length=40, stop=10)
 
 results = Array{Number, 2}(undef, length(tournesol_scores_powers), 7)
 results[:,1] = tournesol_scores_powers
