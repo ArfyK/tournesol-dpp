@@ -26,8 +26,8 @@ df = DataFrame(CSV.File("tournesol_scores_above_20_2023-09-18.csv"))
 criteria_scores = Matrix(coalesce.(df[:, CRITERIA], 0))
 
 tournesol_scores = Vector(coalesce.(df[:, :tournesol_score], 0))
-quantile_95 = quantile!(tournesol_scores, 0.95)
-quantile_50 = quantile!(tournesol_scores, 0.50)
+quantile_95 = quantile(tournesol_scores, 0.95)
+quantile_50 = quantile(tournesol_scores, 0.50)
 top_5_percent_indexes = findall(x->x>=quantile_95, tournesol_scores)
 bottom_50_percent_indexes = findall(x->x<=quantile_50, tournesol_scores)
 
