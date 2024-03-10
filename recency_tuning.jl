@@ -32,8 +32,8 @@ df = DataFrame(CSV.File("tournesol_scores_above_20_2023-09-18.csv"))
 criteria_scores = Matrix(coalesce.(df[:, CRITERIA], 0))
 
 tournesol_scores = Vector(coalesce.(df[:, :tournesol_score], 0))
-quantile_95 = quantile!(tournesol_scores, 0.95)
-quantile_50 = quantile!(tournesol_scores, 0.50)
+quantile_95 = quantile(tournesol_scores, 0.95)
+quantile_50 = quantile(tournesol_scores, 0.50)
 top_5_percent_indexes = findall(x->x>=quantile_95, tournesol_scores)
 bottom_50_percent_indexes = findall(x->x<=quantile_50, tournesol_scores)
 
@@ -58,9 +58,9 @@ selection_frequency_limit = 0.2
 minimum_top_20_proportion = 0.1
 maximum_top_20_proportion = 0.3
 
-tournesol_scores_powers = range(start=1, length=10, stop=5)
-caracteristic_times = range(start=1, length=20, stop=5000)
-discount_coefficients = range(start=100, length=50, stop=100000)
+tournesol_scores_powers = range(start=1, length=12, stop=6)
+caracteristic_times = range(start=1, length=30, stop=60)
+discount_coefficients = range(start=0, length=10, stop=5)
 
 #=
 tournesol_scores_powers = range(start=1, length=2, stop=5) #Parameters for
