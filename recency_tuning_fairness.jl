@@ -38,7 +38,7 @@ ref_date = Date("2023-09-19", dateformat"yyyy-mm-dd")#one day older than the dat
 ages_in_days = get_age_in_days.(df[:, :publication_date], ref_date)
 
 #results = DataFrame(CSV.File("recency_tuning/filtered_results_discount_[0.001,100.0]_caracteristic_times_[1.0,5000.0]_tournesol_scores_powers_[1.0,5.0].csv"))
-results = DataFrame(CSV.File("recency_tuning/filtered_results_discount_[0.0,5.0]_caracteristic_times_[1.0,5000.0]_tournesol_scores_powers_[1.0,5.0].csv"))
+results = DataFrame(CSV.File("recency_tuning/filtered_results_discount_[5.0,10.0]_caracteristic_times_[1.0,60.0]_tournesol_scores_powers_[1.0,6.0].csv"))
 
 #Test parameters
 sample_size = 100000
@@ -72,12 +72,13 @@ for i in 1:sample_size
 	indexes = sample(L, bundle_size)
 	frequencies[indexes] .+= 1
 end
+frequencies ./= sample_size
 
 #Plot
 println("Plotting")
 p1=plot(
 	tournesol_scores, 
-	frequencies/(sample_size*bundle_size), 
+	frequencies,
 	seriestype=:scatter, 
 	mc=:blue, 
 	xlabel="Tournesol score", 
@@ -88,7 +89,7 @@ p1=plot(
 )
 p2=plot(
 	ages_in_days, 
-	frequencies/(sample_size*bundle_size), 
+	frequencies,
 	seriestype=:scatter, 
 	mc=:green, 
 	xlabel="Ages in days", 
