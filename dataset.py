@@ -9,6 +9,8 @@ def build_dataset(collective_criteria_scores, tournesol_score_threshold=20):
     # select videos with a tournesol score above threshold
     dataset = dataset.loc[dataset["largely_recommended"] >= tournesol_score_threshold]
     dataset["publication_date"] = None
+    dataset["title"] = None
+    dataset["channel"] = None
     dataset.reset_index(inplace=True)
 
     # request videos information to the youtube API
@@ -43,8 +45,12 @@ def build_dataset(collective_criteria_scores, tournesol_score_threshold=20):
                 )
         r = requests.get(url)
         for item in r.json()["items"]:
-            dataset.loc[dataset["video"] == item["id"], "publication_date"] = item[
-                "snippet"
-            ]["publishedAt"]
+            dataset.loc[
+                dataset["video"] == item["id"], ["title", "channel", "publication_date"]
+            ] = (
+                item["snippet"]["title"],
+                item["snippet"]["channelTitle"],
+                item["snippet"]["publishedAt"],
+            )
 
     return dataset
