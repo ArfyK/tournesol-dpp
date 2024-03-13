@@ -17,9 +17,9 @@ from utils import get_age_in_days, CRITERIA
 df = pd.read_csv("tournesol_scores_above_20_2023-09-18.csv")
 
 # Model parameters
-power = 1.6
-discount = 4
-caracteristic_time = 205
+power = 2.8
+discount = 7.3
+caracteristic_time = 31
 
 # Quality model
 tournesol_scores = df["tournesol_score"].to_numpy()
