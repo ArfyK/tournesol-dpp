@@ -50,7 +50,8 @@ X = np.matmul(np.diag(qualities), diversity)
 DPP = FiniteDPP("likelihood", **{"L_gram_factor": X})
 
 # Sample
-for _ in range(10):
+n_sample = 10
+for _ in range(n_sample):
     DPP.sample_exact_k_dpp(size=3)
 
 print(DPP.list_of_samples)
