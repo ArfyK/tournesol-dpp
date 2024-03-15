@@ -10,7 +10,7 @@ indexes = list(range(n))
 eigenvalues = np.random.default_rng().normal(10, 10, n)
 
 try:
-    print("Test Node and Binary tree")
+    print("Test create_children")
     bt = BinaryTree(eigenvalues)
     node = bt.root
 
@@ -32,7 +32,7 @@ try:
     print(node.left_child.left_child.indexes)
     print(node.left_child.left_child.eigenvalues)
 except:
-    pass
+    print("create_children failed")
 
 print("\n")
 
@@ -53,6 +53,22 @@ for i in range(n + 1):
 
 print("\n")
 print("Test the path removing algorithm")
+for i in range(n):
+    print(i)
+    bt_copy = copy.deepcopy(bt)
+    bt_copy.root.remove_path(i)
+    node = bt_copy.root
+
+    print(node.indexes)
+    print(node.eigenvalues)
+
+    print(node.right_child.indexes)
+    print(node.right_child.eigenvalues)
+
+    print(node.left_child.indexes)
+    print(node.left_child.eigenvalues)
+
+print("last test")
 for i in range(n):
     bt_copy = copy.deepcopy(bt)
     bt_copy.root.remove_path(i)
