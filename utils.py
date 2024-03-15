@@ -78,3 +78,9 @@ def make_box_for_grid(thumbnail_widget, title, channel):
     vb.layout.align_items = "center"
     vb.children = [boxb, h1, h2]
     return vb
+
+def construct_bundle_widget(sample_df):
+    hb = 0
+    button = 0
+
+    return hb, button
