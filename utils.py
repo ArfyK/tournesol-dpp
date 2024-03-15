@@ -3,6 +3,8 @@ import datetime
 
 import ipywidgets as widgets
 
+from dppy.finite_dpps import FiniteDPP
+
 CRITERIA = [
     "largely_recommended",
     "reliability",
@@ -35,7 +37,7 @@ def get_age_in_days(video_series, ref_date):
 
 def construct_L_Ensemble(df, power, discount, caracteristic_time):
     # Quality model
-    tournesol_scores = df["tournesol_score"].to_numpy()
+    tournesol_scores = df["largely_recommended"].to_numpy()
 
     ref_date = datetime.datetime(
         2023, 9, 19, 0, 0
