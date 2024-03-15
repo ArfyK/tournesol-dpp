@@ -42,9 +42,7 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     ref_date = datetime.datetime(
         2023, 9, 19, 0, 0
     )  # one day older than the video database
-    ages_in_days = df.apply(
-        lambda x: get_age_in_days(x, ref_date), axis="columns"
-    ).to_numpy()
+    ages_in_days = df["age_in_days"].to_numpy(na_value=df["age_in_days"].max())
 
     qualities = (
         1 + discount * np.exp(-ages_in_days / caracteristic_time)
