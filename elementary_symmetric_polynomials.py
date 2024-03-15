@@ -46,18 +46,27 @@ class Node:
                     self.left_child.elementary_symmetric_polynomials[: i + 1],
                     np.flip(self.right_child.elementary_symmetric_polynomials[: i + 1]),
                 )
+    def copy(self, other_node):
+        self.indexes = other_node.indexes
+        self.eigenvalues = other_node.eigenvalues
+        self.elementary_symmetric_polynomials = other_node.elementary_symmetric_polynomials
+        self.left_child = other_node.left_child
+        self.right_child = other_node.right_child
 
     def remove_path(self, index):
-        if index in self.indexes:
-            if self.left_child.indexes == [index]:
-                self = self.right_child
-            elif self.right_child.indexes == [index]:
-                self = self.left_child
-            else:
-                self.elementary_symmetric_polynomials = np.array(np.nan)
-                self.left_child.remove_path(index)
-                self.right_child.remove_path(index)
-
+        if index not in self.indexes:
+            return
+        if self.left_child.indexes == [index]:
+            self.copy(self.right_child)
+            return
+        elif self.right_child.indexes == [index]:
+            self.copy(self.left_child)
+            return
+        else:
+            self.elementary_symmetric_polynomials = np.array(np.nan)
+            self.left_child.remove_path(index)
+            self.right_child.remove_path(index)
+            return
 
 class BinaryTree:
     def __init__(self, eigenvalues):
