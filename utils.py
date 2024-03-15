@@ -33,6 +33,38 @@ def get_age_in_days(video_series, ref_date):
         return np.nan
 
 
+def construct_L_Ensemble(df, power, discount, caracteristic_time):
+    # Quality model
+    tournesol_scores = df["tournesol_score"].to_numpy()
+
+    ref_date = datetime.datetime(
+        2023, 9, 19, 0, 0
+    )  # one day older than the video database
+    ages_in_days = df.apply(
+        lambda x: get_age_in_days(x, ref_date), axis="columns"
+    ).to_numpy()
+
+    qualities = (
+        1 + discount * np.exp(-ages_in_days / caracteristic_time)
+    ) * np.apply_along_axis(lambda x: x**power, 0, tournesol_scores)
+
+    # Diversity model
+    criteria_scores = df[CRITERIA[1:]].to_numpy(na_value=0)  # Missing values ?!
+    criteria_scores_norms = np.sqrt((criteria_scores**2).sum(1))
+
+    nonzeros_indices = np.nonzero(criteria_scores_norms)
+
+    diversity = criteria_scores
+    diversity[nonzeros_indices] = (
+        (criteria_scores[nonzeros_indices]).transpose()
+        / criteria_scores_norms[nonzeros_indices]
+    ).transpose()
+
+    # Construct L-Ensemble
+    X = np.matmul(np.diag(qualities), diversity)
+    return FiniteDPP("likelihood", **{"L_gram_factor": X})
+
+
 def make_box_for_grid(thumbnail_widget, title, channel):
     h1 = widgets.HTML(value=title)
     h2 = widgets.HTML(value=channel)
