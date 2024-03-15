@@ -68,7 +68,8 @@ for i in range(n):
     print(node.left_child.indexes)
     print(node.left_child.eigenvalues)
 
-print("last test")
+print('\n')
+print("Test calculation of e^{-n}_{k-1}")
 for i in range(n):
     bt_copy = copy.deepcopy(bt)
     bt_copy.root.remove_path(i)
@@ -77,7 +78,7 @@ for i in range(n):
         np.concatenate((bt.root.eigenvalues[:i], bt.root.eigenvalues[i + 1 :])), n - 1
     )
     try:
-        assert np.array_equal(bt_copy.root.elementary_symmetric_polynomials[i], esp[:,n - 1])
+        assert np.array_equal(bt_copy.root.elementary_symmetric_polynomials, esp[:,n - 1])
     except AssertionError:
         print(bt_copy.root.elementary_symmetric_polynomials)
         print(esp[:,n - 1])
