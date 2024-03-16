@@ -68,7 +68,4 @@ class Node:
             self.right_child.remove_path(index)
             return
 
-class BinaryTree:
-    def __init__(self, eigenvalues):
-        self.root = Node(eigenvalues=eigenvalues, indexes=list(range(eigenvalues.size)))
-        self.root.create_children(eigenvalues)
+
