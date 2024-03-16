@@ -1,4 +1,5 @@
 import copy
+import time
 
 import numpy as np
 
@@ -107,3 +108,24 @@ for i in range(n):
     except AssertionError:
         print(my_partials[i])
         print(partial_esp[n - 1, n - 1])
+
+print("\n")
+print("Compare computation times")
+n = 500
+k = 10
+print("n = " + str(n))
+print("k = " + str(k))
+eigenvalues = np.random.default_rng().normal(10, 10, n)
+
+time_start = time.time()
+Node.partial_elementary_symmetric_polynomials(eigenvalues, k)
+time_elapsed = time.time() - time_start
+print("Binary tree algorithm took: " + str(time_elapsed))
+
+time_start = time.time()
+for i in range(k):
+    elementary_symmetric_polynomials(
+        np.concatenate((eigenvalues[:i], eigenvalues[i + 1 :])), k - 1
+    )
+time_elapsed = time.time() - time_start
+print("Naive algorithm took: " + str(time_elapsed))
