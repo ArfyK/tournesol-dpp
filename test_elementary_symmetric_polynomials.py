@@ -38,7 +38,7 @@ print("\n")
 print("Test the computation of elementary symmetric polynomials")
 node.compute_elementary_symmetric_polynomials(n)
 
-esp = elementary_symmetric_polynomials(node.eigenvalues, n)
+esp = elementary_symmetric_polynomials(eigenvalues, n)
 # print(esp)
 for i in range(n + 1):
     try:
@@ -77,3 +77,33 @@ for i in range(n):
     except AssertionError:
         print(node_copy.elementary_symmetric_polynomials)
         print(esp[:, n - 1])
+
+print("\n")
+print("Test Node.elementary_symmetric_polynomials")
+my_esp = Node.elementary_symmetric_polynomials(eigenvalues, n)
+esp = elementary_symmetric_polynomials(eigenvalues, n)
+try:
+    assert np.array_equal(my_esp, esp[:, n])
+except AssertionError:
+    print(my_esp)
+    print(esp[:, n])
+
+print("\n")
+print("Test Node.partial_elementary_symmetric_polynomials")
+my_esp_k, my_partials = Node.partial_elementary_symmetric_polynomials(eigenvalues, n)
+esp = elementary_symmetric_polynomials(eigenvalues, n)
+try:
+    assert my_esp_k == esp[n, n]
+except AssertionError:
+    print(my_esp_k)
+    print(esp[n, n])
+
+for i in range(n):
+    partial_esp = elementary_symmetric_polynomials(
+        np.concatenate((eigenvalues[:i], eigenvalues[i + 1 :])), n - 1
+    )
+    try:
+        assert my_partials[i] == partial_esp[n - 1, n - 1]
+    except AssertionError:
+        print(my_partials[i])
+        print(partial_esp[n - 1, n - 1])
