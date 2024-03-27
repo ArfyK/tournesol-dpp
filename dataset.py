@@ -11,6 +11,8 @@ def build_dataset(collective_criteria_scores, tournesol_score_threshold=20):
     dataset["publication_date"] = None
     dataset["title"] = None
     dataset["channel"] = None
+    dataset["view_count"] = None
+    dataset["duration"] = None
     dataset.reset_index(inplace=True)
 
     # request videos information to the youtube API
@@ -18,6 +20,8 @@ def build_dataset(collective_criteria_scores, tournesol_score_threshold=20):
     url_prefix = (
         "https://youtube.googleapis.com/youtube/v3/videos?"
         + "part=snippet"
+        + "&part=contentDetails"
+        + "&part=statistics"
         + "&key="
         + key
     )
@@ -46,11 +50,13 @@ def build_dataset(collective_criteria_scores, tournesol_score_threshold=20):
         r = requests.get(url)
         for item in r.json()["items"]:
             dataset.loc[
-                dataset["video"] == item["id"], ["title", "channel", "publication_date"]
+                dataset["video"] == item["id"], ["title", "channel", "publication_date", "view_count", "duration"]
             ] = (
                 item["snippet"]["title"],
                 item["snippet"]["channelTitle"],
                 item["snippet"]["publishedAt"],
+                item["statistics"]["viewCount"],
+                item["contentDetails"]["duration"]
             )
 
     return dataset
