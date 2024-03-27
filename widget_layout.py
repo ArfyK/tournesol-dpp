@@ -6,10 +6,12 @@ import ipywidgets as widgets
 
 from IPython.display import display
 
-def make_box_for_grid(thumbnail_widget, title, channel, publication_date):
+def make_box_for_grid(thumbnail_widget, title, channel, publication_date, duration, view_count):
     h1 = widgets.HTML(value=title)
     h2 = widgets.HTML(value=channel)
-    h3 = widgets.HTML(value=publication_date)
+    h3 = widgets.HTML(value=duration + " - " + publication_date)
+    h4 = widgets.HTML(value="Views: " + view_count)
+    
     
     boxb = widgets.Box()
     boxb.layout = widgets.Layout()
@@ -18,7 +20,7 @@ def make_box_for_grid(thumbnail_widget, title, channel, publication_date):
     # Compose into a vertical box
     vb = widgets.VBox()
     vb.layout.align_items = "center"
-    vb.children = [boxb, h3, h1, h2]
+    vb.children = [boxb, h1, h2, h3, h4]
     return vb
 
 
@@ -44,6 +46,14 @@ def bundle_hbox(sample_df, preferences_results_series, bundle_type):
             sample_df["video"] == video_id, "channel"
         ].to_string(index=False)
 
+        duration = sample_df.loc[
+            sample_df["video"] == video_id, "duration"
+        ].to_string(index=False)
+
+        view_count = sample_df.loc[
+            sample_df["video"] == video_id, "view_count"
+        ].to_string(index=False)
+
         try:
             publication_date = sample_df.loc[
                 sample_df["video"] == video_id, "publication_date"
@@ -55,7 +65,7 @@ def bundle_hbox(sample_df, preferences_results_series, bundle_type):
         image = widgets.Image(value=file.read())
         image.layout.object_fit = "contain"
 
-        boxes.append(make_box_for_grid(image, video_title, video_channel, publication_date))
+        boxes.append(make_box_for_grid(image, video_title, video_channel, publication_date, duration, view_count))
 
     button = widgets.Button(description="Preferred bundle")
     button.on_click(
