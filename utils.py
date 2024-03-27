@@ -146,7 +146,7 @@ def construct_bundles_widget(
     recent_videos_sample = df.loc[df["age_in_days"] <= 21].sample(
         n=recent_videos_to_sample, replace=False
     )
-    old_videos_sample = df.loc[df["age_in_days"] <= 21].sample(
+    old_videos_sample = df.loc[df["age_in_days"] > 21].sample(
         n=old_videos_to_sample, replace=False
     )
 
