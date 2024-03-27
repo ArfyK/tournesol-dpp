@@ -55,8 +55,8 @@ def build_dataset(collective_criteria_scores, tournesol_score_threshold=20):
                 item["snippet"]["title"],
                 item["snippet"]["channelTitle"],
                 item["snippet"]["publishedAt"],
-                item["statistics"]["viewCount"],
-                item["contentDetails"]["duration"]
+                item["statistics"]["viewCount"].split('.')[0],
+                item["contentDetails"]["duration"][2:]
             )
 
     return dataset
