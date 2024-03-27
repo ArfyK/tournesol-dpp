@@ -74,10 +74,11 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
 # Widget layout functions
 
 
-def make_box_for_grid(thumbnail_widget, title, channel):
+def make_box_for_grid(thumbnail_widget, title, channel, publication_date):
     h1 = widgets.HTML(value=title)
     h2 = widgets.HTML(value=channel)
-
+    h3 = widgets.HTML(value=publication_date)
+    
     boxb = widgets.Box()
     boxb.layout = widgets.Layout()
     boxb.children = [thumbnail_widget]
@@ -85,7 +86,7 @@ def make_box_for_grid(thumbnail_widget, title, channel):
     # Compose into a vertical box
     vb = widgets.VBox()
     vb.layout.align_items = "center"
-    vb.children = [boxb, h1, h2]
+    vb.children = [boxb, h3, h1, h2]
     return vb
 
 
@@ -101,20 +102,28 @@ def download_thumbnails(id_series, path):
 
 
 def bundle_hbox(sample_df, preferences_results_series, bundle_type):
+    pd.set_option('display.max_colwidth', 10000)
     boxes = []
     for video_id in sample_df["video"]:
         video_title = sample_df.loc[sample_df["video"] == video_id, "title"].to_string(
-            index=False
+            index=False, max_rows=1000
         )
         video_channel = sample_df.loc[
             sample_df["video"] == video_id, "channel"
         ].to_string(index=False)
 
+        try:
+            publication_date = sample_df.loc[
+                sample_df["video"] == video_id, "publication_date"
+            ].to_string(index=False).split('T')[0]
+        except TypeError:
+            publication_date = ""
+
         file = open("thumbnails/" + video_id + ".jpg", "rb")
         image = widgets.Image(value=file.read())
         image.layout.object_fit = "contain"
 
-        boxes.append(make_box_for_grid(image, video_title, video_channel))
+        boxes.append(make_box_for_grid(image, video_title, video_channel, publication_date))
 
     button = widgets.Button(description="Preferred bundle")
     button.on_click(
