@@ -61,5 +61,5 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     ).transpose()
 
     # Construct L-Ensemble
-    X = np.matmul(np.diag(qualities), diversity)
+    X = np.matmul(diversity.transpose(), np.diag(qualities))
     return FiniteDPP("likelihood", **{"L_gram_factor": X})
