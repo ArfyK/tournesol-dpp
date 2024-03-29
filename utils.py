@@ -42,9 +42,6 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     # Quality model
     tournesol_scores = df["largely_recommended"].to_numpy()
 
-    ref_date = datetime.datetime(
-        2023, 9, 19, 0, 0
-    )  # one day older than the video database
     ages_in_days = df["age_in_days"].to_numpy(na_value=df["age_in_days"].max())
 
     qualities = (
