@@ -36,7 +36,7 @@ def download_thumbnails(id_series, path):
 
 
 def bundle_hbox(sample_df, preferences_results_series, bundle_type):
-    pd.set_option('display.max_colwidth', 10000)
+    #pd.set_option('display.max_colwidth', 10000) #display full titles
     boxes = []
     for video_id in sample_df["video"]:
         video_title = sample_df.loc[sample_df["video"] == video_id, "title"].to_string(
@@ -117,9 +117,15 @@ def construct_bundles_widget(
     # Randomly compose into a vertical box
     vb = widgets.VBox()
     vb.layout.align_items = "center"
+    no_preference_button = widgets.Button(description="No preference")
+    no_preference_button.on_click(
+        lambda button: increment_preferences_results(
+            button, preferences_results_series, 'no_preference'
+        )
+    )
     if bool(random.getrandbits(1)):
-        vb.children = [dpp_hb, uniform_hb]
+        vb.children = [dpp_hb, no_preference_button, uniform_hb]
     else:
-        vb.children = [uniform_hb, dpp_hb]
+        vb.children = [uniform_hb, no_preference_button, dpp_hb]
 
     display(vb)
