@@ -52,7 +52,7 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     criteria_scores = df[CRITERIA[1:]].to_numpy(na_value=0)  # Missing values ?!
     criteria_scores += 2*np.abs(criteria_scores.min(axis=0)) #ensures we only have positive scores
 
-    log_video_statistics = np.log(df[['age_in_days', 'duration', 'view_count']].to_numpy(na_value=1))
+    log_video_statistics = np.log(df[['age_in_days', 'view_count']].to_numpy(na_value=1))
     scale = criteria_scores.max(axis=0).mean()
     scaled_minimum = criteria_scores.min(axis=0).mean()
     scaled_log_video_statistics = scale*((log_video_statistics - log_video_statistics.min(axis=0))/(log_video_statistics.max(axis=0) - log_video_statistics.min(axis=0))) + scaled_minimum
