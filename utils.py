@@ -50,6 +50,8 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
 
     # Diversity model
     criteria_scores = df[CRITERIA[1:]].to_numpy(na_value=0)  # Missing values ?!
+    criteria_scores += 2*criteria_scores.min(axis=0) #ensures we only have positive scores
+
     criteria_scores_norms = np.sqrt((criteria_scores**2).sum(1))
 
     nonzeros_indices = np.nonzero(criteria_scores_norms)
