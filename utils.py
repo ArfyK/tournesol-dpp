@@ -1,11 +1,11 @@
 import io
 import datetime
+import re
 
 import numpy as np
 import pandas as pd
 
 from dppy.finite_dpps import FiniteDPP
-
 
 
 CRITERIA = [
@@ -38,6 +38,18 @@ def get_age_in_days(video_series, ref_date):
         return np.nan
 
 
+def duration_in_secs(duration_string):
+    duration_in_secs = 0
+    try:
+        m = re.search(r"([0-9]{1,2}H)?([0-9]{1,2}M)?([0-9]{1,2}S)?", duration_string)
+        for i in range(3):
+            if m.groups()[i] != None:
+                duration_in_secs += 60 ** (2 - i) * int(m.groups()[i][:-1])
+        return duration_in_secs
+    except TypeError:
+        return 1
+
+
 def construct_L_Ensemble(df, power, discount, caracteristic_time):
     # Quality model
     tournesol_scores = df["largely_recommended"].to_numpy()
@@ -50,14 +62,34 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
 
     # Diversity model
     criteria_scores = df[CRITERIA[1:]].to_numpy(na_value=0)  # Missing values ?!
-    criteria_scores += 2*np.abs(criteria_scores.min(axis=0)) #ensures we only have positive scores
+    criteria_scores += 2 * np.abs(
+        criteria_scores.min(axis=0)
+    )  # ensures we only have positive scores
+    durations_in_secs = df["duration"].apply(duration_in_secs)
 
-    log_video_statistics = np.log(df[['age_in_days', 'view_count']].to_numpy(na_value=1))
+    log_video_statistics = np.log(
+        np.column_stack(
+            (
+                df[["age_in_days", "view_count"]].to_numpy(na_value=1),
+                durations_in_secs.to_numpy(),
+            )
+        )
+    )
+
     scale = criteria_scores.max(axis=0).mean()
     scaled_minimum = criteria_scores.min(axis=0).mean()
-    scaled_log_video_statistics = scale*((log_video_statistics - log_video_statistics.min(axis=0))/(log_video_statistics.max(axis=0) - log_video_statistics.min(axis=0))) + scaled_minimum
+    scaled_log_video_statistics = (
+        scale
+        * (
+            (log_video_statistics - log_video_statistics.min(axis=0))
+            / (log_video_statistics.max(axis=0) - log_video_statistics.min(axis=0))
+        )
+        + scaled_minimum
+    )
 
-    features_vectors = np.concatenate((criteria_scores, scaled_log_video_statistics),axis=1)
+    features_vectors = np.concatenate(
+        (criteria_scores, scaled_log_video_statistics), axis=1
+    )
     features_vectors_norms = np.sqrt((features_vectors**2).sum(1))
     nonzeros_indices = np.nonzero(features_vectors_norms)
 
