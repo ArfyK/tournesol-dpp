@@ -52,14 +52,19 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     criteria_scores = df[CRITERIA[1:]].to_numpy(na_value=0)  # Missing values ?!
     criteria_scores += 2*np.abs(criteria_scores.min(axis=0)) #ensures we only have positive scores
 
-    criteria_scores_norms = np.sqrt((criteria_scores**2).sum(1))
+    log_video_statistics = np.log(df[['age_in_days', 'duration', 'view_count']].to_numpy(na_value=1))
+    scale = criteria_scores.max(axis=0).mean()
+    scaled_minimum = criteria_scores.min(axis=0).mean()
+    scaled_log_video_statistics = scale*((log_video_statistics - log_video_statistics.min(axis=0))/(log_video_statistics.max(axis=0) - log_video_statistics.min(axis=0))) + scaled_minimum
 
-    nonzeros_indices = np.nonzero(criteria_scores_norms)
+    features_vectors = np.concatenate((criteria_scores, scaled_log_video_statistics),axis=1)
+    features_vectors_norms = np.sqrt((features_vectors**2).sum(1))
+    nonzeros_indices = np.nonzero(features_vectors_norms)
 
-    diversity = criteria_scores
+    diversity = features_vectors
     diversity[nonzeros_indices] = (
-        (criteria_scores[nonzeros_indices]).transpose()
-        / criteria_scores_norms[nonzeros_indices]
+        (features_vectors[nonzeros_indices]).transpose()
+        / features_vectors_norms[nonzeros_indices]
     ).transpose()
 
     # Construct L-Ensemble
