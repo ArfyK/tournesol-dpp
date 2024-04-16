@@ -101,4 +101,17 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
 
     # Construct L-Ensemble
     X = np.matmul(diversity.transpose(), np.diag(qualities))
-    return FiniteDPP("likelihood", **{"L_gram_factor": X})
+    n_videos = X.shape[1]
+    L = np.zeros((n_videos, n_videos))
+    for i in range(n_videos):
+        same_channel_indexes = df.loc[
+            df['channel'] == df.loc[i, 'channel']
+        ].index
+        for j in same_channel_indexes:
+            L[i, j] = qualities[i]*qualities[j]
+        for j in range(i, n_videos):
+            if L[i, j] == 0:
+                L[i, j] = X[:,i].dot(X[:,j])
+    L = 1/2*(L + L.T)
+           
+    return FiniteDPP("likelihood", **{"L": L})
