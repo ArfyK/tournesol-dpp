@@ -108,7 +108,7 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
             df['channel'] == df.loc[i, 'channel']
         ].index
         for j in same_channel_indexes:
-            L[i, j] = qualities[i]*qualities[j]
+            L[i, j] = (qualities[i]*qualities[j])**2
         for j in range(i, n_videos):
             if L[i, j] == 0:
                 L[i, j] = X[:,i].dot(X[:,j])
