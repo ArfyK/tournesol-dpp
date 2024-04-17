@@ -105,7 +105,8 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     L = np.zeros((n_videos, n_videos))
     for i in range(n_videos):
         same_channel_indexes = df.loc[
-            df['channel'] == df.loc[i, 'channel']
+            (df.index > i) &
+            (df['channel'] == df.loc[i, 'channel'])
         ].index
         for j in same_channel_indexes:
             L[i, j] = (qualities[i]*qualities[j])**2
