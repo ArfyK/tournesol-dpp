@@ -112,6 +112,6 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
         for j in range(i, n_videos):
             if L[i, j] == 0:
                 L[i, j] = X[:,i].dot(X[:,j])
-    L = 1/2*(L + L.T)
+    L = (L + L.T)
            
     return FiniteDPP("likelihood", **{"L": L})
