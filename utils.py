@@ -49,8 +49,7 @@ def duration_in_secs(duration_string):
     except TypeError:
         return 1
 
-
-def construct_L_Ensemble(df, power, discount, caracteristic_time):
+def construct_L_Ensemble(df, power, discount, caracteristic_time, alpha=0.1):
     # Quality model
     tournesol_scores = df["largely_recommended"].to_numpy()
 
@@ -61,10 +60,12 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
     ) * np.apply_along_axis(lambda x: x**power, 0, tournesol_scores)
 
     # Diversity model
+    ## Scores
     criteria_scores = df[CRITERIA[1:]].to_numpy(na_value=0)  # Missing values ?!
     criteria_scores += 2 * np.abs(
         criteria_scores.min(axis=0)
     )  # ensures we only have positive scores
+    ## Statistics: duration, age and view count
     durations_in_secs = df["duration"].apply(duration_in_secs)
 
     log_video_statistics = np.log(
@@ -87,8 +88,23 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
         + scaled_minimum
     )
 
+    ##channel
+    channels = list(df['channel'].unique())
+    n_channel = len(channels)
+    
+    channel_basis_vectors = np.sqrt(alpha)*np.identity(n_channel) #use a random orthonormal matrix ?
+    
+    channel_to_vector_dict = dict()
+    for i in range(n_channel):
+        channel_to_vector_dict[channels[i]] = i
+
+    channel_vectors = np.column_stack(
+        [channel_basis_vectors[:, channel_to_vector_dict[channel]] for channel in df['channel']]
+    )
+    
+    ##concatenate and normalize
     features_vectors = np.concatenate(
-        (criteria_scores, scaled_log_video_statistics), axis=1
+        (criteria_scores, scaled_log_video_statistics, channel_vectors.T), axis=1
     )
     features_vectors_norms = np.sqrt((features_vectors**2).sum(1))
     nonzeros_indices = np.nonzero(features_vectors_norms)
@@ -101,18 +117,7 @@ def construct_L_Ensemble(df, power, discount, caracteristic_time):
 
     # Construct L-Ensemble
     X = np.matmul(diversity.transpose(), np.diag(qualities))
-    n_videos = X.shape[1]
-    L = np.zeros((n_videos, n_videos))
-    for i in range(n_videos):
-        same_channel_indexes = df.loc[
-            (df.index > i) &
-            (df['channel'] == df.loc[i, 'channel'])
-        ].index
-        for j in same_channel_indexes:
-            L[i, j] = (qualities[i]*qualities[j])**2
-        for j in range(i, n_videos):
-            if L[i, j] == 0:
-                L[i, j] = X[:,i].dot(X[:,j])
-    L = (L + L.T)
            
-    return FiniteDPP("likelihood", **{"L": L})
+    return FiniteDPP("likelihood", **{"L_gram_factor": X})
+    
+
